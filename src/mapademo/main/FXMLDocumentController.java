@@ -100,7 +100,6 @@ public class FXMLDocumentController implements Initializable {
 
     /** Group que se escala para aplicar el zoom. */
     private Group zoomGroup;
-
     /**
      * Pane que actúa como lienzo del mapa.
      * Contiene la imagen de fondo y todos los elementos superpuestos
