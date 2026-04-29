@@ -25,7 +25,7 @@
  *
  * ============================================================
  */
-package mapademo;
+package mapademo.main;
 
 import java.io.File;
 import java.io.IOException;
