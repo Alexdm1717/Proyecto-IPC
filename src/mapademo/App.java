@@ -11,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import upv.ipc.sportlib.User;
 
 /**
  *
@@ -81,7 +82,22 @@ public class App extends Application {
         stageRef.setTitle("Run Tracker - IPC");
         stageRef.setScene(scene);
         stageRef.show();
+        
+        
     }
     
+    // =========================================================
+    //  SECCION DE USUARIO
+    // =========================================================
+    
+    private User usuario;
+    
+    public void setUser(User user){
+        usuario = user;
+    }
+    
+    public User getUser(){
+        return usuario;
+    }
     
 }

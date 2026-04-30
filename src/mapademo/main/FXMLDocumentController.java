@@ -66,6 +66,8 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import upv.ipc.sportlib.SportActivityApp;
+import upv.ipc.sportlib.User;
 
 /**
  * Controlador principal de la aplicación de mapa con POIs.
@@ -403,7 +405,8 @@ public class FXMLDocumentController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
+        
+        
         // ── Configuración del slider de zoom ──────────────────────────
         zoom_slider.setMin(0.5);   // zoom mínimo: 50 %
         zoom_slider.setMax(1.5);   // zoom máximo: 150 %
@@ -616,8 +619,5 @@ public class FXMLDocumentController implements Initializable {
         circle.setCenterX(x);
         circle.setCenterY(y);
         mapPane.getChildren().add(circle); // Se añade sobre el mapa como cualquier nodo
-    }
-
-
-
+    }         
 }

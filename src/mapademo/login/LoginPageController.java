@@ -12,7 +12,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import mapademo.App;
+import upv.ipc.sportlib.SportActivityApp;
 
 /**
  * FXML Controller class
@@ -22,10 +24,6 @@ import mapademo.App;
 public class LoginPageController implements Initializable {
 
     @FXML
-    private TextField emailField;
-    @FXML
-    private Label emailErrorMsg;
-    @FXML
     private PasswordField passwordField;
     @FXML
     private Label PasswordErrorMsg;
@@ -33,6 +31,10 @@ public class LoginPageController implements Initializable {
     private Button logInButton;
     @FXML
     private Button logInButton1;
+    @FXML
+    private TextField nameField;
+    @FXML
+    private Label nameErrorMsg;
 
     /**
      * Initializes the controller class.
@@ -50,6 +52,27 @@ public class LoginPageController implements Initializable {
         }
         catch(Exception e){System.out.println(e);}
     }
+
+    @FXML
+    private void handleLogIn(MouseEvent event) {
+        String nickName = nameField.getText();
+        String password = passwordField.getText();
+        
+        boolean ok = SportActivityApp.getInstance().login(nickName, password);
+        
+        if(ok){
+            try{App.getInstance().switchToMain();}catch(Exception e){}
+        }
+        else{
+            String error = "NickName o contrasena incorrectos";
+            nameErrorMsg.setText(error);
+            nameErrorMsg.setVisible(true);
+            PasswordErrorMsg.setText(error);
+            PasswordErrorMsg.setVisible(true);
+        }
+    }
+    
+    
 
 
 
