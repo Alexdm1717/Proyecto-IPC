@@ -9,6 +9,9 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import mapademo.App;
 
 /**
@@ -19,7 +22,17 @@ import mapademo.App;
 public class LoginPageController implements Initializable {
 
     @FXML
-    private Button enterbutton;
+    private TextField emailField;
+    @FXML
+    private Label emailErrorMsg;
+    @FXML
+    private PasswordField passwordField;
+    @FXML
+    private Label PasswordErrorMsg;
+    @FXML
+    private Button logInButton;
+    @FXML
+    private Button logInButton1;
 
     /**
      * Initializes the controller class.
@@ -27,13 +40,17 @@ public class LoginPageController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-    }
+    }    
     
-    public void enterApp() {
+    // alternar entre login / singin.
+    @FXML
+    public void switchToSingin(){
         try{
-            App.getInstance().switchToMain();
+            App.getInstance().switchToSingin();
         }
-        catch (Exception e){}
+        catch(Exception e){System.out.println(e);}
     }
-    
+
+
+
 }

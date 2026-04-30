@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 public class App extends Application {
     // Referencias a los archivos
     String loginPath = "/mapademo/login/LoginPage.fxml";
+    String singinPath = "/mapademo/singin/SinginPage.fxml";
     String mainPath = "/mapademo/main/FXMLDocument.fxml";
     Stage stageRef;
     
@@ -58,6 +59,18 @@ public class App extends Application {
         stageRef.show();
     }
     
+    public void switchToSingin() throws Exception {
+        // Cargamos el archivo del login e instanciamos la escena
+        Parent root = FXMLLoader.load(getClass().getResource(singinPath));
+        Scene scene = new Scene(root);
+        
+        // Actualizamos la nueva escena
+        stageRef.hide();
+        stageRef.setTitle("SingIn");
+        stageRef.setScene(scene);
+        stageRef.show();
+    }
+    
     public void switchToMain() throws Exception {
         // Cargamos el archivo del login e instanciamos la escena
         Parent root = FXMLLoader.load(getClass().getResource(mainPath));
@@ -69,4 +82,6 @@ public class App extends Application {
         stageRef.setScene(scene);
         stageRef.show();
     }
+    
+    
 }
