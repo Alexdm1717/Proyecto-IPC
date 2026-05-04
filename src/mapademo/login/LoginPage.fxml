@@ -35,7 +35,7 @@
                         <Font name="Fira Code Light" size="12.0" />
                      </font>
                   </TextField>
-                  <Label fx:id="nameErrorMsg" disable="true" text="error" textAlignment="CENTER" textFill="#ed1616">
+                  <Label fx:id="nameErrorMsg" text="error" textAlignment="CENTER" textFill="#ed1616" visible="false">
                      <VBox.margin>
                         <Insets bottom="5.0" left="30.0" top="5.0" />
                      </VBox.margin>
@@ -60,7 +60,7 @@
                         <Insets left="15.0" right="15.0" />
                      </VBox.margin>
                   </PasswordField>
-                  <Label fx:id="PasswordErrorMsg" disable="true" text="error" textAlignment="CENTER" textFill="#ed1616">
+                  <Label fx:id="PasswordErrorMsg" text="error" textAlignment="CENTER" textFill="#ed1616" visible="false">
                      <opaqueInsets>
                         <Insets />
                      </opaqueInsets>
