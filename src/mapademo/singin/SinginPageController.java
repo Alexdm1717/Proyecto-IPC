@@ -6,12 +6,15 @@ package mapademo.singin;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.DatePicker; 
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import mapademo.App;
@@ -68,13 +71,20 @@ public class SinginPageController implements Initializable {
         String email = emailField.getText();
         String password = passwordField.getText();
         String birthText = birthDateField.getText();
-        LocalDate birth = LocalDate.parse(birthText);
+        LocalDate birth;
+        
         // Anadir la selecion de foto
         String avatarPath = "";
+        //al clicar pone por defecto los mensajes de error en oculto, 
+        //si siguen estando mal se vuelven a activar después
+        nameErrorMsg.setVisible(false);                                                                                                                                                       
+        emailErrorMsg.setVisible(false);                                                                                                                                                      
+        PasswordErrorMsg.setVisible(false);     
+        dateErrorMsg.setVisible(false);
         
         boolean nickNameOk = User.checkNickName(nickName);
         if (!nickNameOk){
-            nameErrorMsg.setText("NickName incorrecto");
+            nameErrorMsg.setText("6-15 caracteres. Solo letras, números, _ y -");
             nameErrorMsg.setVisible(true);
             return;
         }
@@ -84,10 +94,31 @@ public class SinginPageController implements Initializable {
             emailErrorMsg.setVisible(true);
             return;
         }
-        boolean passwordOk = User.checkPassword(password);
-        if (!passwordOk){
-            PasswordErrorMsg.setText("Password Incorrecto");
-            PasswordErrorMsg.setVisible(true);
+        String passwordError = null;                                                                                                                                                          
+        if (password.length() < 8 || password.length() > 20) {                                                                                                                                
+            passwordError = "Debe tener entre 8 y 20 caracteres";
+        } else if (!password.matches(".*[a-z].*")) {                                                                                                                                          
+            passwordError = "Falta una letra minúscula";          
+        } else if (!password.matches(".*[A-Z].*")) {
+            passwordError = "Falta una letra mayúscula";                                                                                                                                      
+        } else if (!password.matches(".*\\d.*")) {
+            passwordError = "Falta un dígito";                                                                                                                                                
+        } else if (!password.matches(".*[!@#$%&*()\\-+=].*")) {   
+            passwordError = "Falta un símbolo (!@#$%&*()-+=)";                                                                                                                                
+        }                                                                                                                                                                                     
+                                          
+        if (passwordError != null) {                                                                                                                                                          
+            PasswordErrorMsg.setText(passwordError);                                                                                                                                          
+            PasswordErrorMsg.setVisible(true);      
+            return;                                                                                                                                                                           
+        }
+        
+        //he cambiado esto a .ofPattern para que parsee correctamente, antes los dates parseaban en otro formato de fecha rara
+        try {
+            birth = LocalDate.parse(birthText, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        } catch (DateTimeParseException e) {
+            dateErrorMsg.setText("Formato debe ser dd/MM/yyyy");
+            dateErrorMsg.setVisible(true);
             return;
         }
         boolean ageOk = User.isOlderThan(birth, 16);
@@ -103,7 +134,7 @@ public class SinginPageController implements Initializable {
         
         // Cambia a la aplicacion
         try{
-            App.getInstance().switchToMain();
+            App.getInstance().switchToHome();
         }catch(Exception e){}
     }
 

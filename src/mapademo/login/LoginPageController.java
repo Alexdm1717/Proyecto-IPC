@@ -61,7 +61,7 @@ public class LoginPageController implements Initializable {
         boolean ok = SportActivityApp.getInstance().login(nickName, password);
         
         if(ok){
-            try{App.getInstance().switchToMain();}catch(Exception e){}
+            try{App.getInstance().switchToHome();}catch(Exception e){}
         }
         else{
             String error = "NickName o contrasena incorrectos";

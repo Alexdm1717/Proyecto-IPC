@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="800.0" prefWidth="1280.0" style="-fx-background-color: #fdfdfd;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.profile.ProfileController">
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #f0f0f0;">
+            <padding><Insets bottom="15.0" left="20.0" right="20.0" top="15.0" /></padding>
+            <children>
+                <Button minWidth="120.0" onAction="#volverHome" prefHeight="40.0" style="-fx-background-color: #ffffff; -fx-background-radius: 10; -fx-cursor: hand;" text="← Volver" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label text="Perfil">
+                    <font><Font name="SansSerif Bold" size="22.0" /></font>
+                </Label>
+                <Region HBox.hgrow="ALWAYS" />
+                <Region prefWidth="120.0" />
+            </children>
+        </HBox>
+    </top>
+    <center>
+        <VBox alignment="TOP_CENTER" fillWidth="false" spacing="0.0">
+            <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+            <children>
+                <Button maxHeight="100.0" maxWidth="100.0" minHeight="100.0" minWidth="100.0" onAction="#chooseAvatar" prefHeight="100.0" prefWidth="100.0" style="-fx-background-color: #ffffff; -fx-background-radius: 50%; -fx-cursor: hand; -fx-border-color: #cccccc; -fx-border-radius: 50%;">
+                    <graphic>
+                        <ImageView fx:id="avatarImage" fitHeight="92.0" fitWidth="92.0" preserveRatio="false" smooth="true">
+                            <image><Image url="@../../resources/perfil.png" /></image>
+                            <clip>
+                                <Circle centerX="46.0" centerY="46.0" radius="46.0" />
+                            </clip>
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <Region VBox.vgrow="ALWAYS" />
+
+                <VBox prefWidth="581.0" spacing="2.0">
+                    <children>
+                        <Label text="NickName">
+                            <font><Font name="SansSerif Bold" size="18.0" /></font>
+                            <VBox.margin><Insets left="30.0" /></VBox.margin>
+                        </Label>
+                        <TextField fx:id="nickField" disable="true" prefHeight="36.0" prefWidth="372.0" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-background-color: #fdfdfd; -fx-border-color: #f0f0f0;">
+                            <VBox.margin><Insets left="15.0" right="15.0" /></VBox.margin>
+                            <font><Font name="SansSerif Regular" size="16.0" /></font>
+                            <padding><Insets bottom="6.0" left="10.0" right="10.0" top="6.0" /></padding>
+                        </TextField>
+                        <Label text="El nickname no se puede modificar" textFill="#999999">
+                            <VBox.margin><Insets left="30.0" /></VBox.margin>
+                            <font><Font name="SansSerif Regular" size="11.0" /></font>
+                        </Label>
+                    </children>
+                </VBox>
+
+                <Region VBox.vgrow="ALWAYS" />
+
+                <VBox prefWidth="581.0" spacing="2.0">
+                    <children>
+                        <Label text="Email">
+                            <font><Font name="SansSerif Bold" size="18.0" /></font>
+                            <VBox.margin><Insets left="30.0" /></VBox.margin>
+                        </Label>
+                        <TextField fx:id="emailField" prefHeight="36.0" prefWidth="372.0" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-background-color: #fdfdfd; -fx-border-color: #f0f0f0;">
+                            <VBox.margin><Insets left="15.0" right="15.0" /></VBox.margin>
+                            <font><Font name="SansSerif Regular" size="16.0" /></font>
+                            <padding><Insets bottom="6.0" left="10.0" right="10.0" top="6.0" /></padding>
+                        </TextField>
+                        <Label fx:id="emailErrorMsg" managed="false" prefWidth="551.0" text="" textFill="#ed1616" visible="false" wrapText="true">
+                            <VBox.margin><Insets left="15.0" /></VBox.margin>
+                            <font><Font name="SansSerif Regular" size="14.0" /></font>
+                        </Label>
+                    </children>
+                </VBox>
+
+                <Region VBox.vgrow="ALWAYS" />
+
+                <VBox prefWidth="581.0" spacing="2.0">
+                    <children>
+                        <Label text="Contraseña">
+                            <font><Font name="SansSerif Bold" size="18.0" /></font>
+                            <VBox.margin><Insets left="30.0" /></VBox.margin>
+                        </Label>
+                        <PasswordField fx:id="passwordField" prefHeight="36.0" prefWidth="372.0" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-background-color: #fdfdfd; -fx-border-color: #f0f0f0;">
+                            <VBox.margin><Insets left="15.0" right="15.0" /></VBox.margin>
+                            <font><Font name="SansSerif Bold" size="16.0" /></font>
+                            <padding><Insets bottom="6.0" left="10.0" right="10.0" top="6.0" /></padding>
+                        </PasswordField>
+                        <Label fx:id="passwordErrorMsg" managed="false" prefWidth="551.0" text="" textFill="#ed1616" visible="false" wrapText="true">
+                            <VBox.margin><Insets left="15.0" /></VBox.margin>
+                            <font><Font name="SansSerif Regular" size="14.0" /></font>
+                        </Label>
+                    </children>
+                </VBox>
+
+                <Region VBox.vgrow="ALWAYS" />
+
+                <VBox prefWidth="581.0" spacing="2.0">
+                    <children>
+                        <Label text="Fecha de nacimiento">
+                            <font><Font name="SansSerif Bold" size="18.0" /></font>
+                            <VBox.margin><Insets left="30.0" /></VBox.margin>
+                        </Label>
+                        <TextField fx:id="birthDateField" prefHeight="36.0" prefWidth="372.0" promptText="dd/MM/yyyy" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-background-color: #fdfdfd; -fx-border-color: #f0f0f0;">
+                            <VBox.margin><Insets left="15.0" right="15.0" /></VBox.margin>
+                            <font><Font name="SansSerif Regular" size="16.0" /></font>
+                            <padding><Insets bottom="6.0" left="10.0" right="10.0" top="6.0" /></padding>
+                        </TextField>
+                        <Label fx:id="dateErrorMsg" managed="false" prefWidth="548.0" text="" textFill="#ed1616" visible="false" wrapText="true">
+                            <VBox.margin><Insets left="15.0" /></VBox.margin>
+                            <font><Font name="SansSerif Regular" size="14.0" /></font>
+                        </Label>
+                    </children>
+                </VBox>
+
+                <Region VBox.vgrow="ALWAYS" />
+
+                <Button onAction="#applyChanges" prefHeight="48.0" prefWidth="549.0" style="-fx-background-color: #030303; -fx-background-radius: 10; -fx-border-radius: 10;" text="Aplicar cambios" textAlignment="CENTER" textFill="#fdfdfd">
+                    <font><Font name="SansSerif Regular" size="18.0" /></font>
+                </Button>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

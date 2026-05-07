@@ -68,6 +68,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import upv.ipc.sportlib.SportActivityApp;
 import upv.ipc.sportlib.User;
+import mapademo.App;
 
 /**
  * Controlador principal de la aplicación de mapa con POIs.
@@ -619,5 +620,12 @@ public class FXMLDocumentController implements Initializable {
         circle.setCenterX(x);
         circle.setCenterY(y);
         mapPane.getChildren().add(circle); // Se añade sobre el mapa como cualquier nodo
-    }         
+    }
+    
+    @FXML
+    private void volverHome(){
+        try{
+            App.getInstance().switchToHome();}
+        catch(Exception e){ e.printStackTrace();}
+    }
 }

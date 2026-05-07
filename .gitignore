@@ -1,0 +1,9 @@
+# Build artifacts
+/build/
+/dist/
+
+# NetBeans config local (cada usuario tiene la suya)
+/nbproject/private/
+
+# Sistema
+.DS_Store
