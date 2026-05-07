@@ -6,12 +6,10 @@ package mapademo.singin;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -40,13 +38,9 @@ public class SinginPageController implements Initializable {
     @FXML
     private Label PasswordErrorMsg;
     @FXML
-    private DatePicker birthDateField;
+    private TextField birthDateField;
     @FXML
     private Label dateErrorMsg;
-    @FXML
-    private Button avatarButton;
-    @FXML
-    private Label avatarErrorMsg;
     @FXML
     private Button SingInButton;
     @FXML
@@ -73,7 +67,8 @@ public class SinginPageController implements Initializable {
         String nickName = nameField.getText();
         String email = emailField.getText();
         String password = passwordField.getText();
-        LocalDate birth = birthDateField.getValue();
+        String birthText = birthDateField.getText();
+        LocalDate birth = LocalDate.parse(birthText);
         // Anadir la selecion de foto
         String avatarPath = "";
         
@@ -111,4 +106,5 @@ public class SinginPageController implements Initializable {
             App.getInstance().switchToMain();
         }catch(Exception e){}
     }
+
 }

@@ -20,7 +20,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.main.FXMLDocumentController">
    <center>
-      <VBox prefHeight="556.0" prefWidth="853.0" stylesheets="@../resources/estilos.css">
+      <VBox prefHeight="556.0" prefWidth="853.0" stylesheets="@../../resources/estilos.css">
          <children>
             <SplitPane fx:id="splitPane" dividerPositions="0.19699727024567792" VBox.vgrow="ALWAYS">
                <items>
@@ -31,7 +31,7 @@
                            <children>
                               <ImageView pickOnBounds="true">
                                  <image>
-                                    <Image url="@../resources/upv.jpg" />
+                                    <Image url="@../../../maps/upv.jpg" />
                                  </image>
                               </ImageView>
                            </children>
