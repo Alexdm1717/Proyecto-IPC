@@ -22,7 +22,7 @@ public class App extends Application {
     String loginPath = "/mapademo/login/LoginPage.fxml";
     String singinPath = "/mapademo/singin/SinginPage.fxml";
     String homePath = "/mapademo/home/Home.fxml";
-    String runTrackerPath = "/mapademo/main/FXMLDocument.fxml";
+    String runTrackerPath = "/mapademo/main/Main.fxml";
     String profilePath = "/mapademo/profile/Profile.fxml";
     Stage stageRef;
 
