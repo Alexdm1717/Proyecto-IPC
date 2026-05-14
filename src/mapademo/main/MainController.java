@@ -35,6 +35,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polyline;
 import javafx.scene.text.Text;
@@ -81,6 +82,8 @@ public class MainController implements Initializable {
     // ── Variables para el pan con arrastre (clic izquierdo) ───────────────
     private double dragStartX, dragStartY;
     private double scrollStartH, scrollStartV;
+    @FXML
+    private ListView<Activity> activities_listview;
 
     /**
      * Initializes the controller class.
@@ -106,6 +109,26 @@ public class MainController implements Initializable {
                     setGraphic(null);
                 } else {
                     setText(poi.getCode() + " - " + poi.getPosition());
+                }
+            }
+        });
+        
+        activities_listview.setCellFactory(listview -> new ListCell<Activity>() {
+            @Override
+            protected void updateItem(Activity activity, boolean empty){
+                super.updateItem(activity, empty);
+                
+                if (empty || activity == null){
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(activity.getName() + " - " + activity.getStartTime().toString());
+                    
+                    setOnMouseClicked(event -> {
+                        if (event.getButton() == MouseButton.PRIMARY && activity != null) {
+                            rebuildActivity(activity);
+                        }
+                    });
                 }
             }
         });
@@ -360,6 +383,8 @@ public class MainController implements Initializable {
     }
 
     private void buildActivity(Activity activity) {
+        clearMap();
+        
         MapRegion region = activity.getSuggestedMap();
 
         // Carga SÍNCRONA (false) para que getWidth()/getHeight() no devuelvan 0.
@@ -384,9 +409,122 @@ public class MainController implements Initializable {
             Point2D p = proj.project(tp);
             route.getPoints().addAll(p.getX(), p.getY());
         }
+        
 
         // Añadimos la ruta sobre el mapa (encima de la imagen de fondo)
         map_pane.getChildren().add(route);
+        
+        // ── Indicador de INICIO (verde) ───────────────────────────────────────
+        TrackPoint start = activity.getStartPoint();
+        Point2D pStart = proj.project(start);
+
+        Circle startCircle = new Circle(8, Color.LIMEGREEN);
+        startCircle.setCenterX(pStart.getX());
+        startCircle.setCenterY(pStart.getY());
+        startCircle.setStroke(Color.DARKGREEN);
+        startCircle.setStrokeWidth(1);
+
+        Text startLabel = new Text("▶ Inicio");
+        startLabel.setX(pStart.getX() + 10);
+        startLabel.setY(pStart.getY() + 5);
+        startLabel.setFill(Color.DARKGREEN);
+        startLabel.setStyle("-fx-font-weight: bold;");
+
+        // ── Indicador de FIN (rojo) ───────────────────────────────────────────
+        TrackPoint end = activity.getEndPoint();
+        Point2D pEnd = proj.project(end);
+
+        Circle endCircle = new Circle(8, Color.TOMATO);
+        endCircle.setCenterX(pEnd.getX());
+        endCircle.setCenterY(pEnd.getY());
+        endCircle.setStroke(Color.DARKRED);
+        endCircle.setStrokeWidth(1);
+            
+        Text endLabel = new Text("■ Fin");
+        endLabel.setX(pEnd.getX() + 10);
+        endLabel.setY(pEnd.getY() + 5);
+        endLabel.setFill(Color.DARKRED);
+        endLabel.setStyle("-fx-font-weight: bold;");
+
+        // ── Añadir todo al mapa ───────────────────────────────────────────────
+        map_pane.getChildren().addAll(startCircle, startLabel, endCircle, endLabel);
+        
+        
+        
+        activities_listview.getItems().add(activity);
+
+    }
+    
+    private void rebuildActivity(Activity activity){
+        clearMap();
+        
+        MapRegion region = activity.getSuggestedMap();
+
+        // Carga SÍNCRONA (false) para que getWidth()/getHeight() no devuelvan 0.
+        // Por defecto JavaFX carga imágenes en un hilo aparte, lo que haría
+        // que las dimensiones fueran 0 en el momento de crear la proyección.
+        Image img = new Image(
+                new File(region.getImagePath()).toURI().toString(), false
+        );
+
+        // Construimos el mapa con la imagen del recorrido
+        buildMap(new File(region.getImagePath()));
+
+        // Creamos la proyección con las dimensiones reales de la imagen
+        MapProjection proj = new MapProjection(region, img.getWidth(), img.getHeight());
+
+        // Construimos la polilínea con todos los puntos del recorrido
+        Polyline route = new Polyline();
+        route.setStroke(Color.RED);
+        route.setStrokeWidth(2);
+
+        for (TrackPoint tp : activity.getTrackPoints()) {
+            Point2D p = proj.project(tp);
+            route.getPoints().addAll(p.getX(), p.getY());
+        }
+        
+
+        // Añadimos la ruta sobre el mapa (encima de la imagen de fondo)
+        map_pane.getChildren().add(route);
+        
+        // ── Indicador de INICIO (verde) ───────────────────────────────────────
+        TrackPoint start = activity.getStartPoint();
+        Point2D pStart = proj.project(start);
+
+        Circle startCircle = new Circle(8, Color.LIMEGREEN);
+        startCircle.setCenterX(pStart.getX());
+        startCircle.setCenterY(pStart.getY());
+        startCircle.setStroke(Color.DARKGREEN);
+        startCircle.setStrokeWidth(1);
+
+        Text startLabel = new Text("▶ Inicio");
+        startLabel.setX(pStart.getX() + 10);
+        startLabel.setY(pStart.getY() + 5);
+        startLabel.setFill(Color.DARKGREEN);
+        startLabel.setStyle("-fx-font-weight: bold;");
+
+        // ── Indicador de FIN (rojo) ───────────────────────────────────────────
+        TrackPoint end = activity.getEndPoint();
+        Point2D pEnd = proj.project(end);
+
+        Circle endCircle = new Circle(8, Color.TOMATO);
+        endCircle.setCenterX(pEnd.getX());
+        endCircle.setCenterY(pEnd.getY());
+        endCircle.setStroke(Color.DARKRED);
+        endCircle.setStrokeWidth(1);
+            
+        Text endLabel = new Text("■ Fin");
+        endLabel.setX(pEnd.getX() + 10);
+        endLabel.setY(pEnd.getY() + 5);
+        endLabel.setFill(Color.DARKRED);
+        endLabel.setStyle("-fx-font-weight: bold;");
+
+        // ── Añadir todo al mapa ───────────────────────────────────────────────
+        map_pane.getChildren().addAll(startCircle, startLabel, endCircle, endLabel);
+    }
+    
+    private void clearMap(){
+        map_pane.getChildren().removeAll();
     }
 
     @FXML

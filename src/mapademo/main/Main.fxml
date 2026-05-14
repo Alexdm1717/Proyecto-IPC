@@ -6,11 +6,11 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Slider?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
@@ -36,7 +36,7 @@
          <children>
             <VBox alignment="TOP_CENTER" prefHeight="801.0" prefWidth="514.0">
                <children>
-                  <Label graphicTextGap="40.0" text="Sesiones">
+                  <Label graphicTextGap="40.0" text="Actividades">
                      <font>
                         <Font name="SansSerif Bold" size="24.0" />
                      </font>
@@ -44,25 +44,12 @@
                         <Insets bottom="20.0" top="30.0" />
                      </VBox.margin>
                   </Label>
-                  <Pane prefHeight="52.0" prefWidth="163.0" style="-fx-border-width: 2; -fx-border-color: #e2e2e2; -fx-border-radius: 10; -fx-background-color: transparent; -fx-background-radius: 10;">
-                     <VBox.margin>
-                        <Insets bottom="40.0" left="20.0" right="20.0" />
-                     </VBox.margin>
+                  <HBox prefHeight="627.0" prefWidth="514.0">
                      <children>
-                        <Button mnemonicParsing="false" style="-fx-background-color: transparent;" />
-                        <ImageView fitHeight="39.0" fitWidth="54.0" layoutX="8.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../resources/filter_alt_30dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png" />
-                           </image>
-                        </ImageView>
-                        <TextField layoutX="50.0" layoutY="9.0" prefHeight="33.0" prefWidth="410.0" promptText="filtrar" style="-fx-background-color: transparent;">
-                           <font>
-                              <Font name="SansSerif Regular" size="18.0" />
-                           </font>
-                        </TextField>
+                        <ListView fx:id="activities_listview" prefHeight="100.0" prefWidth="451.0" />
+                        <ListView fx:id="map_listview" onMouseClicked="#listClicked" prefHeight="100.0" prefWidth="453.0" />
                      </children>
-                  </Pane>
-                  <ListView fx:id="map_listview" onMouseClicked="#listClicked" prefHeight="547.0" prefWidth="514.0" />
+                  </HBox>
                   <Button fx:id="load_track_button" alignment="CENTER" mnemonicParsing="false" onAction="#loadFile" prefHeight="36.0" prefWidth="274.0" style="-fx-background-color: #030303; -fx-background-radius: 10; -fx-border-radius: 10;" text="Subir Archivo" textAlignment="CENTER" textFill="#fdfdfd">
                      <font>
                         <Font name="SansSerif Regular" size="18.0" />
