@@ -24,6 +24,7 @@ public class App extends Application {
     String homePath = "/mapademo/home/Home.fxml";
     String runTrackerPath = "/mapademo/main/Main.fxml";
     String profilePath = "/mapademo/profile/Profile.fxml";
+    String historialPath = "/mapademo/historial/Historial.fxml";
     Stage stageRef;
 
     private static App instance;
@@ -109,6 +110,19 @@ public class App extends Application {
     public void switchToRunTracker() throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource(runTrackerPath));
         stageRef.setTitle("Run Tracker");
+        if (stageRef.getScene() == null) {
+            stageRef.setScene(new Scene(root, 1280, 840));
+        } else {
+            stageRef.getScene().setRoot(root);
+        }
+        stageRef.setWidth(1280);
+        stageRef.setHeight(840);
+        if (!stageRef.isShowing()) stageRef.show();
+    }
+
+    public void switchToHistorial() throws Exception {
+        Parent root = FXMLLoader.load(getClass().getResource(historialPath));
+        stageRef.setTitle("Historial");
         if (stageRef.getScene() == null) {
             stageRef.setScene(new Scene(root, 1280, 840));
         } else {

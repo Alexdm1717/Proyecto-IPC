@@ -1,7 +1,7 @@
 package mapademo.main;
 
 
-
+import mapademo.App;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -12,6 +12,7 @@ import java.util.ResourceBundle;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -213,27 +214,43 @@ public class MainController implements Initializable {
         
         currentProjection = new MapProjection(region, img.getWidth(), img.getHeight());
         
-        // Ruta
+        // Ruta + bounding box para centrar la vista despues
         Polyline route = new Polyline();
         route.setStroke(Color.web("#E63946"));
         route.setStrokeWidth(2.5);
+        double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE;
+        double maxX = -Double.MAX_VALUE, maxY = -Double.MAX_VALUE;
         for (TrackPoint tp: activity.getTrackPoints()){
             Point2D p = currentProjection.project(tp);
             route.getPoints().addAll(p.getX(),p.getY());
+            if (p.getX() < minX) minX = p.getX();
+            if (p.getY() < minY) minY = p.getY();
+            if (p.getX() > maxX) maxX = p.getX();
+            if (p.getY() > maxY) maxY = p.getY();
         }
-        
+
         // Marcador de inicio (verde)
         Point2D pS = currentProjection.project(activity.getStartPoint());
         Circle startCircle = makeMarker(pS, Color.LIMEGREEN, Color.DARKGREEN);
         installTooltip(startCircle, "Inicio");
-        
-        
+
+
         // Marcador de fin (rojo)
         Point2D pE = currentProjection.project(activity.getEndPoint());
         Circle endCircle = makeMarker(pE, Color.TOMATO, Color.DARKRED);
         installTooltip(endCircle, "Fin");
-        
+
         map_pane.getChildren().addAll(route, startCircle, endCircle);
+
+        // Centramos el scroll sobre el centro de la ruta (despues de que se haga el layout).
+        // El contenido del scroll esta escalado por el zoom, asi que multiplicamos.
+        if (!activity.getTrackPoints().isEmpty()) {
+            final double cx = (minX + maxX) / 2;
+            final double cy = (minY + maxY) / 2;
+            final double mapW = img.getWidth();
+            final double mapH = img.getHeight();
+            Platform.runLater(() -> centerScrollOnRoute(mapW, mapH, cx, cy));
+        }
         
         
         // Anotaciones persistidas de esta actividad
@@ -245,6 +262,26 @@ public class MainController implements Initializable {
     }
     
     
+    // Mueve el scrollpane para que el centro de la ruta quede en el centro del viewport.
+    // Como el zoomGroup escala el contenido, hay que multiplicar las coords por el zoom.
+    private void centerScrollOnRoute(double mapW, double mapH, double cx, double cy){
+        if (map_scrollpane.getViewportBounds() == null) return;
+        if (zoomGroup == null) return;
+        double scale = zoomGroup.getScaleX();
+        double viewW = map_scrollpane.getViewportBounds().getWidth();
+        double viewH = map_scrollpane.getViewportBounds().getHeight();
+        double scaledW = mapW * scale;
+        double scaledH = mapH * scale;
+        if (scaledW > viewW){
+            double h = (cx*scale - viewW/2) / (scaledW - viewW);
+            map_scrollpane.setHvalue(Math.max(0, Math.min(1, h)));
+        }
+        if (scaledH > viewH){
+            double v = (cy*scale - viewH/2) / (scaledH - viewH);
+            map_scrollpane.setVvalue(Math.max(0, Math.min(1, v)));
+        }
+    }
+
     // -----------------------------------------------------------------
     // builMap: construye el Pane del mapa con todos sus handlers de raton
     // -----------------------------------------------------------------
@@ -571,5 +608,12 @@ public class MainController implements Initializable {
         File f = fc.showOpenDialog(zoom_slider.getScene().getWindow());
         if (f == null) return;
         buildMap(f);
+    }
+    @FXML
+    private void VolverHome(){
+        try{
+            App.getInstance().switchToHome();
+        }catch(Exception e){e.printStackTrace();}
+    
     }
 }

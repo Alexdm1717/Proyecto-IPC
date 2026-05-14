@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -44,6 +45,17 @@ public class LoginPageController implements Initializable {
         // TODO
     }    
     
+    // efecto hover: bajamos la opacidad del boton al pasar el raton por encima
+    @FXML
+    private void hoverEnter(MouseEvent e){
+        ((Node) e.getSource()).setOpacity(0.85);
+    }
+
+    @FXML
+    private void hoverExit(MouseEvent e){
+        ((Node) e.getSource()).setOpacity(1.0);
+    }
+
     // alternar entre login / singin.
     @FXML
     public void switchToSingin(){

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="800.0" prefWidth="1280.0" style="-fx-background-color: #F7F8F5;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.historial.HistorialController">
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #EEF1EB;">
+            <padding><Insets bottom="15.0" left="20.0" right="20.0" top="15.0" /></padding>
+            <children>
+                <Button minWidth="120.0" onAction="#volverHome" prefHeight="40.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-cursor: hand;" text="← Volver" textFill="#111111" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label text="Historial de sesiones" textFill="#111111">
+                    <font><Font name="SansSerif Bold" size="22.0" /></font>
+                </Label>
+                <Region HBox.hgrow="ALWAYS" />
+                <Region prefWidth="120.0" />
+            </children>
+        </HBox>
+    </top>
+    <center>
+        <HBox spacing="15.0">
+            <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+            <children>
+
+                <!-- ============ IZQUIERDA: lista de sesiones ============ -->
+                <VBox minWidth="-Infinity" prefWidth="280.0" spacing="10.0" style="-fx-background-color: #EEF1EB; -fx-background-radius: 16;">
+                    <padding><Insets bottom="15.0" left="15.0" right="15.0" top="15.0" /></padding>
+                    <children>
+                        <Button maxWidth="1.7976931348623157E308" onAction="#importarSesion" prefHeight="40.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-cursor: hand;" text="+ Importar GPX" textFill="#111111">
+                            <font><Font name="SansSerif Bold" size="14.0" /></font>
+                        </Button>
+                        <Separator />
+                        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS">
+                            <content>
+                                <VBox fx:id="sessionsListBox" spacing="8.0" style="-fx-background-color: transparent;" />
+                            </content>
+                        </ScrollPane>
+                    </children>
+                </VBox>
+
+                <!-- ============ CENTRO: mapa + perfil de desnivel ============ -->
+                <VBox spacing="15.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <VBox spacing="6.0" style="-fx-background-color: #EEF1EB; -fx-background-radius: 16;" VBox.vgrow="ALWAYS">
+                            <padding><Insets bottom="10.0" left="12.0" right="12.0" top="10.0" /></padding>
+                            <children>
+                                <Label text="Mapa" textFill="#111111">
+                                    <font><Font name="SansSerif Bold" size="16.0" /></font>
+                                </Label>
+                                <ScrollPane fx:id="mapScroll" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS">
+                                    <content>
+                                        <Pane fx:id="mapPane" style="-fx-background-color: #F7F8F5;" />
+                                    </content>
+                                </ScrollPane>
+                            </children>
+                        </VBox>
+                        <VBox prefHeight="240.0" spacing="6.0" style="-fx-background-color: #EEF1EB; -fx-background-radius: 16;">
+                            <padding><Insets bottom="10.0" left="12.0" right="12.0" top="10.0" /></padding>
+                            <children>
+                                <Label text="Perfil de desnivel" textFill="#111111">
+                                    <font><Font name="SansSerif Bold" size="16.0" /></font>
+                                </Label>
+                                <LineChart fx:id="elevationChart" animated="false" createSymbols="false" legendVisible="false" VBox.vgrow="ALWAYS">
+                                    <xAxis>
+                                        <NumberAxis label="Distancia (km)" side="BOTTOM" fx:id="xAxis" />
+                                    </xAxis>
+                                    <yAxis>
+                                        <NumberAxis fx:id="yAxis" label="Altitud (m)" side="LEFT" />
+                                    </yAxis>
+                                </LineChart>
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+
+                <!-- ============ DERECHA: estadisticas ============ -->
+                <VBox minWidth="-Infinity" prefWidth="280.0" spacing="12.0" style="-fx-background-color: #EEF1EB; -fx-background-radius: 16;">
+                    <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+                    <children>
+                        <Label text="Estadisticas" textFill="#111111">
+                            <font><Font name="SansSerif Bold" size="18.0" /></font>
+                        </Label>
+                        <Separator />
+                        <VBox spacing="2.0">
+                            <children>
+                                <Label text="Nombre" textFill="#6B7280"><font><Font name="SansSerif Regular" size="12.0" /></font></Label>
+                                <Label fx:id="statNombre" text="—" textFill="#111111" wrapText="true"><font><Font name="SansSerif Bold" size="15.0" /></font></Label>
+                            </children>
+                        </VBox>
+                        <VBox spacing="2.0">
+                            <children>
+                                <Label text="Fecha" textFill="#6B7280"><font><Font name="SansSerif Regular" size="12.0" /></font></Label>
+                                <Label fx:id="statFecha" text="—" textFill="#111111"><font><Font name="SansSerif Bold" size="15.0" /></font></Label>
+                            </children>
+                        </VBox>
+                        <VBox spacing="2.0">
+                            <children>
+                                <Label text="Distancia" textFill="#6B7280"><font><Font name="SansSerif Regular" size="12.0" /></font></Label>
+                                <Label fx:id="statDistancia" text="—" textFill="#111111"><font><Font name="SansSerif Bold" size="15.0" /></font></Label>
+                            </children>
+                        </VBox>
+                        <VBox spacing="2.0">
+                            <children>
+                                <Label text="Duracion" textFill="#6B7280"><font><Font name="SansSerif Regular" size="12.0" /></font></Label>
+                                <Label fx:id="statDuracion" text="—" textFill="#111111"><font><Font name="SansSerif Bold" size="15.0" /></font></Label>
+                            </children>
+                        </VBox>
+                        <VBox spacing="2.0">
+                            <children>
+                                <Label text="Velocidad media" textFill="#6B7280"><font><Font name="SansSerif Regular" size="12.0" /></font></Label>
+                                <Label fx:id="statVelocidad" text="—" textFill="#111111"><font><Font name="SansSerif Bold" size="15.0" /></font></Label>
+                            </children>
+                        </VBox>
+                        <VBox spacing="2.0">
+                            <children>
+                                <Label text="Ascenso / Descenso" textFill="#6B7280"><font><Font name="SansSerif Regular" size="12.0" /></font></Label>
+                                <Label fx:id="statDesnivel" text="—" textFill="#111111"><font><Font name="SansSerif Bold" size="15.0" /></font></Label>
+                            </children>
+                        </VBox>
+                        <VBox spacing="2.0">
+                            <children>
+                                <Label text="Altitud min / max" textFill="#6B7280"><font><Font name="SansSerif Regular" size="12.0" /></font></Label>
+                                <Label fx:id="statAltitud" text="—" textFill="#111111"><font><Font name="SansSerif Bold" size="15.0" /></font></Label>
+                            </children>
+                        </VBox>
+                        <VBox spacing="2.0">
+                            <children>
+                                <Label text="Anotaciones" textFill="#6B7280"><font><Font name="SansSerif Regular" size="12.0" /></font></Label>
+                                <Label fx:id="statAnotaciones" text="—" textFill="#111111"><font><Font name="SansSerif Bold" size="15.0" /></font></Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+
+            </children>
+        </HBox>
+    </center>
+</BorderPane>

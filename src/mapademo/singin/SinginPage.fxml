@@ -6,183 +6,186 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" style="-fx-background-color: #fdfdfd;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.singin.SinginPageController">
+<!-- StackPane raiz para que al maximizar el contenido se quede centrado en vez de irse a la izquierda -->
+
+<StackPane style="-fx-background-color: #F7F8F5;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.singin.SinginPageController">
    <children>
-      <Label alignment="TOP_CENTER" layoutX="489.0" layoutY="26.0" prefHeight="48.0" prefWidth="369.0" text="Nombre de la app" textAlignment="CENTER">
-         <font>
-            <Font name="SansSerif Bold" size="36.0" />
-         </font>
-      </Label>
-      <VBox alignment="TOP_CENTER" layoutX="376.0" layoutY="83.0" prefHeight="702.0" prefWidth="581.0" style="-fx-background-color: fdfdfd;">
+      <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0">
          <children>
-            <Label alignment="TOP_CENTER" prefHeight="48.0" prefWidth="369.0" text="Crea una cuenta" textAlignment="CENTER">
+            <Label alignment="TOP_CENTER" layoutX="489.0" layoutY="15.0" prefHeight="40.0" prefWidth="369.0" text="Running LaSafor" textAlignment="CENTER" textFill="#111111">
                <font>
-                  <Font name="SansSerif Bold" size="24.0" />
+                  <Font name="SansSerif Bold" size="32.0" />
                </font>
             </Label>
-            <VBox prefWidth="267.0" spacing="4.0">
+            <VBox alignment="TOP_CENTER" layoutX="376.0" layoutY="65.0" prefHeight="725.0" prefWidth="581.0" spacing="10.0">
                <children>
-                  <Label prefHeight="27.0" prefWidth="129.0" text="NickName">
+                  <Button maxHeight="100.0" maxWidth="100.0" minHeight="100.0" minWidth="100.0" onAction="#chooseAvatar" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="100.0" prefWidth="100.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 50%; -fx-cursor: hand; -fx-border-color: #C6FF3B80; -fx-border-radius: 50%;">
+                     <graphic>
+                        <ImageView fx:id="avatarImage" fitHeight="100.0" fitWidth="100.0" preserveRatio="false" smooth="true">
+                           <image><Image url="@../../resources/perfil.png" /></image>
+                           <clip>
+                              <Circle centerX="50.0" centerY="50.0" radius="50.0" />
+                           </clip>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="110.0" prefWidth="405.0" spacing="2.0" style="-fx-background-color: #EEF1EB; -fx-background-radius: 16;">
+                     <children>
+                        <Label text="NickName" textFill="#111111">
+                           <font>
+                              <Font name="SansSerif Regular" size="18.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="2.0" left="25.0" top="8.0" />
+                           </VBox.margin>
+                        </Label>
+                        <TextField fx:id="nameField" opacity="0.85" prefHeight="32.0" prefWidth="372.0" promptText="6-15 caracteres" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-background-color: #ffffff;" styleClass="input_text">
+                           <VBox.margin>
+                              <Insets left="15.0" right="15.0" />
+                           </VBox.margin>
+                           <font>
+                              <Font name="SansSerif Regular" size="14.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="6.0" left="10.0" right="10.0" top="6.0" />
+                           </padding>
+                        </TextField>
+                        <Label fx:id="nameErrorMsg" managed="false" prefWidth="551.0" text="error" textFill="#ed1616" visible="false" wrapText="true">
+                           <VBox.margin>
+                              <Insets bottom="2.0" left="15.0" top="2.0" />
+                           </VBox.margin>
+                           <font>
+                              <Font name="SansSerif Regular" size="13.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </VBox>
+                  <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="110.0" prefWidth="405.0" spacing="2.0" style="-fx-background-color: #EEF1EB; -fx-background-radius: 16;">
+                     <children>
+                        <Label text="Email" textFill="#111111">
+                           <font>
+                              <Font name="SansSerif Regular" size="18.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="2.0" left="25.0" top="8.0" />
+                           </VBox.margin>
+                        </Label>
+                        <TextField fx:id="emailField" opacity="0.85" prefHeight="32.0" prefWidth="372.0" promptText="tu@email.com" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-background-color: #ffffff;" styleClass="input_text">
+                           <VBox.margin>
+                              <Insets left="15.0" right="15.0" />
+                           </VBox.margin>
+                           <font>
+                              <Font name="SansSerif Regular" size="14.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="6.0" left="10.0" right="10.0" top="6.0" />
+                           </padding>
+                        </TextField>
+                        <Label fx:id="emailErrorMsg" managed="false" prefWidth="551.0" text="error" textFill="#ed1616" visible="false" wrapText="true">
+                           <VBox.margin>
+                              <Insets bottom="2.0" left="15.0" top="2.0" />
+                           </VBox.margin>
+                           <font>
+                              <Font name="SansSerif Regular" size="13.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </VBox>
+                  <VBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="110.0" prefWidth="405.0" spacing="2.0" style="-fx-background-color: #EEF1EB; -fx-background-radius: 16;">
+                     <children>
+                        <Label text="Password" textFill="#111111">
+                           <font>
+                              <Font name="SansSerif Regular" size="18.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="2.0" left="25.0" top="8.0" />
+                           </VBox.margin>
+                        </Label>
+                        <PasswordField fx:id="passwordField" opacity="0.85" prefHeight="32.0" promptText="8-20 caracteres" style="-fx-border-radius: 10; -fx-background-radius: 10; -fx-background-color: #ffffff;">
+                           <font>
+                              <Font name="SansSerif Regular" size="14.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets left="15.0" right="15.0" />
+                           </VBox.margin>
+                           <padding>
+                              <Insets bottom="6.0" left="10.0" right="10.0" top="6.0" />
+                           </padding>
+                        </PasswordField>
+                        <Label fx:id="PasswordErrorMsg" managed="false" prefWidth="551.0" text="error" textFill="#ed1616" visible="false" wrapText="true">
+                           <VBox.margin>
+                              <Insets bottom="2.0" left="15.0" top="2.0" />
+                           </VBox.margin>
+                           <font>
+                              <Font name="SansSerif Regular" size="13.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </VBox>
+                  <VBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="110.0" prefWidth="405.0" spacing="2.0" style="-fx-background-color: #EEF1EB; -fx-background-radius: 16;">
+                     <children>
+                        <Label text="Fecha de nacimiento" textFill="#111111">
+                           <font>
+                              <Font name="SansSerif Regular" size="18.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="2.0" left="25.0" top="8.0" />
+                           </VBox.margin>
+                        </Label>
+                        <TextField fx:id="birthDateField" prefHeight="32.0" prefWidth="372.0" promptText="dd/MM/yyyy" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-background-color: #fdfdfd;" styleClass="input_text">
+                           <VBox.margin>
+                              <Insets left="15.0" right="15.0" />
+                           </VBox.margin>
+                           <font>
+                              <Font name="SansSerif Regular" size="14.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="6.0" left="10.0" right="10.0" top="6.0" />
+                           </padding>
+                        </TextField>
+                        <Label fx:id="dateErrorMsg" managed="false" prefWidth="548.0" text="error" textFill="#ed1616" visible="false" wrapText="true">
+                           <VBox.margin>
+                              <Insets bottom="2.0" left="15.0" top="2.0" />
+                           </VBox.margin>
+                           <font>
+                              <Font name="SansSerif Regular" size="13.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </VBox>
+                  <Button fx:id="SingInButton" mnemonicParsing="false" onMouseClicked="#handleForm" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="38.0" prefWidth="405.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;" text="Registrarse" textAlignment="CENTER" textFill="#111111">
                      <font>
-                        <Font name="SansSerif Bold" size="24.0" />
+                        <Font name="SansSerif Regular" size="16.0" />
                      </font>
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="30.0" top="10.0" />
-                     </VBox.margin>
-                  </Label>
-                  <TextField fx:id="nameField" prefHeight="41.0" prefWidth="372.0" promptText="ejemplo1" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-background-color: #fdfdfd; -fx-border-color: #f0f0f0;" styleClass="input_text">
-                     <VBox.margin>
-                        <Insets left="15.0" right="15.0" />
-                     </VBox.margin>
+                  </Button>
+                  <HBox alignment="CENTER" prefHeight="22.0" prefWidth="555.0" spacing="10.0">
+                     <children>
+                        <Separator prefWidth="139.0" />
+                        <Label opacity="0.5" text="o">
+                           <font>
+                              <Font name="SansSerif Bold" size="16.0" />
+                           </font>
+                        </Label>
+                        <Separator prefWidth="139.0" />
+                     </children>
+                  </HBox>
+                  <Button fx:id="logInButton" mnemonicParsing="false" onMouseClicked="#switchToLogin" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="38.0" prefWidth="405.0" style="-fx-background-color: #C6FF3B; -fx-border-radius: 10; -fx-background-radius: 10; -fx-cursor: hand;" text="Inicia Sesion" textFill="#111111">
                      <font>
-                        <Font name="SansSerif Regular" size="18.0" />
+                        <Font name="SansSerif Bold" size="16.0" />
                      </font>
-                     <padding>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                     </padding>
-                  </TextField>
-                  <Label fx:id="nameErrorMsg" disable="true" prefWidth="551.0" text="error" textFill="#ed1616" visible="false" wrapText="true">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="15.0" top="5.0" />
-                     </VBox.margin>
-                     <font>
-                        <Font name="SansSerif Regular" size="18.0" />
-                     </font>
-                  </Label>
+                  </Button>
                </children>
             </VBox>
-            <VBox prefWidth="267.0" spacing="4.0">
-               <children>
-                  <Label prefHeight="27.0" prefWidth="129.0" text="Email">
-                     <font>
-                        <Font name="SansSerif Bold" size="24.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="30.0" top="10.0" />
-                     </VBox.margin>
-                  </Label>
-                  <TextField fx:id="emailField" prefHeight="41.0" prefWidth="372.0" promptText="email@domain.com" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-background-color: #fdfdfd; -fx-border-color: #f0f0f0;" styleClass="input_text">
-                     <VBox.margin>
-                        <Insets left="15.0" right="15.0" />
-                     </VBox.margin>
-                     <font>
-                        <Font name="SansSerif Regular" size="18.0" />
-                     </font>
-                     <padding>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                     </padding>
-                  </TextField>
-                  <Label fx:id="emailErrorMsg" disable="true" prefWidth="551.0" text="error" textFill="#ed1616" visible="false" wrapText="true">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="15.0" top="5.0" />
-                     </VBox.margin>
-                     <font>
-                        <Font name="SansSerif Regular" size="18.0" />
-                     </font>
-                  </Label>
-               </children>
-            </VBox>
-            <VBox prefWidth="267.0" spacing="4.0">
-               <children>
-                  <Label prefHeight="35.0" prefWidth="124.0" text="Password">
-                     <font>
-                        <Font name="SansSerif Bold" size="24.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="30.0" top="10.0" />
-                     </VBox.margin>
-                  </Label>
-                  <PasswordField fx:id="passwordField" promptText="*************" style="-fx-border-radius: 10; -fx-background-radius: 10; -fx-background-color: #fdfdfd; -fx-border-color: #f0f0f0;">
-                     <font>
-                        <Font name="SansSerif Bold" size="18.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets left="15.0" right="15.0" />
-                     </VBox.margin>
-                     <padding>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                     </padding>
-                  </PasswordField>
-                  <Label fx:id="PasswordErrorMsg" disable="true" prefWidth="551.0" text="error" textFill="#ed1616" visible="false" wrapText="true">
-                     <opaqueInsets>
-                        <Insets />
-                     </opaqueInsets>
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="15.0" top="5.0" />
-                     </VBox.margin>
-                     <font>
-                        <Font name="SansSerif Regular" size="18.0" />
-                     </font>
-                  </Label>
-               </children>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </VBox>
-            <VBox prefWidth="267.0" spacing="4.0">
-               <children>
-                  <Label prefHeight="27.0" prefWidth="252.0" text="Fecha de nacimiento">
-                     <font>
-                        <Font name="SansSerif Bold" size="24.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="30.0" top="10.0" />
-                     </VBox.margin>
-                  </Label>
-                  <TextField fx:id="birthDateField" prefHeight="41.0" prefWidth="372.0" promptText="01/01/2000" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-background-color: #fdfdfd; -fx-border-color: #f0f0f0;" styleClass="input_text">
-                     <VBox.margin>
-                        <Insets left="15.0" right="15.0" />
-                     </VBox.margin>
-                     <font>
-                        <Font name="SansSerif Regular" size="18.0" />
-                     </font>
-                     <padding>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                     </padding>
-                  </TextField>
-                  <Label fx:id="dateErrorMsg" disable="true" prefWidth="548.0" text="error" textFill="#ed1616" visible="false" wrapText="true">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="15.0" top="5.0" />
-                     </VBox.margin>
-                     <font>
-                        <Font name="SansSerif Regular" size="18.0" />
-                     </font>
-                  </Label>
-               </children>
-            </VBox>
-            <Button fx:id="SingInButton" mnemonicParsing="false" onMouseClicked="#handleForm" prefHeight="52.0" prefWidth="549.0" style="-fx-background-color: #030303; -fx-background-radius: 10; -fx-border-radius: 10;" text="Registrarse" textAlignment="CENTER" textFill="#fdfdfd">
-               <font>
-                  <Font name="SansSerif Regular" size="18.0" />
-               </font>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
-            </Button>
-            <HBox alignment="CENTER" prefHeight="34.0" prefWidth="555.0" spacing="10.0">
-               <children>
-                  <Separator prefHeight="34.0" prefWidth="265.0" />
-                  <Label opacity="0.5" text="o">
-                     <font>
-                        <Font name="SansSerif Bold" size="18.0" />
-                     </font>
-                  </Label>
-                  <Separator prefHeight="34.0" prefWidth="259.0" />
-               </children>
-            </HBox>
-            <Button fx:id="logInButton" mnemonicParsing="false" onMouseClicked="#switchToLogin" prefHeight="52.0" prefWidth="549.0" style="-fx-background-color: #f2f2f2; -fx-border-radius: 10; -fx-background-radius: 10;" text="Inicia Sesion" textFill="#030303">
-               <font>
-                  <Font name="SansSerif Bold" size="18.0" />
-               </font>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
-            </Button>
          </children>
-      </VBox>
+      </Pane>
    </children>
-</Pane>
+</StackPane>

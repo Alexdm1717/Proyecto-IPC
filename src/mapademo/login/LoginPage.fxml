@@ -6,36 +6,43 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" style="-fx-background-color: #fdfdfd;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.login.LoginPageController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" style="-fx-background-color: #F7F8F5;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.login.LoginPageController">
    <children>
-      <Label alignment="TOP_CENTER" layoutX="478.0" layoutY="35.0" prefHeight="48.0" prefWidth="359.0" text="Nombre de la app" textAlignment="CENTER">
-         <font>
-            <Font name="SansSerif Bold" size="36.0" />
-         </font>
-      </Label>
-      <VBox alignment="TOP_CENTER" layoutX="366.0" layoutY="106.0" prefHeight="645.0" prefWidth="581.0" spacing="10.0" style="-fx-background-color: fdfdfd;">
+      <VBox alignment="TOP_CENTER" layoutX="366.0" layoutY="9.0" prefHeight="600.0" prefWidth="581.0" spacing="30.0">
          <children>
-            <Label alignment="TOP_CENTER" prefHeight="48.0" prefWidth="369.0" text="Inicia Sesion" textAlignment="CENTER">
+            <ImageView fitHeight="101.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../resources/login.png" />
+               </image></ImageView>
+            <Label alignment="TOP_CENTER" prefHeight="48.0" prefWidth="359.0" text="Running LaSafor" textAlignment="CENTER" textFill="#111111">
                <font>
-                  <Font name="SansSerif Bold" size="24.0" />
+                  <Font name="SansSerif Bold" size="36.0" />
                </font>
             </Label>
-            <VBox prefHeight="62.0" prefWidth="267.0" spacing="4.0">
+            <Text fill="#6B7280" strokeType="OUTSIDE" strokeWidth="0.0" text="Inicia sesion para continuar">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Text>
+            <VBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="58.0" prefWidth="581.0" spacing="4.0" style="-fx-background-color: #EEF1EB; -fx-background-radius: 20;">
                <children>
-                  <Label prefHeight="27.0" prefWidth="129.0" text="NickName">
+                  <Label prefHeight="27.0" prefWidth="129.0" text="NickName" textFill="#111111">
                      <font>
-                        <Font name="SansSerif Bold" size="24.0" />
+                        <Font name="SansSerif Regular" size="24.0" />
                      </font>
                      <VBox.margin>
                         <Insets bottom="10.0" left="30.0" top="10.0" />
                      </VBox.margin>
                   </Label>
-                  <TextField fx:id="nameField" prefHeight="41.0" prefWidth="372.0" promptText="ejemplo1" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-background-color: #fdfdfd; -fx-border-color: #f0f0f0;" styleClass="input_text">
+                  <TextField fx:id="nameField" prefHeight="41.0" prefWidth="372.0" promptText="Tu nickname" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-background-color: #ffffffaa;" styleClass="input_text">
                      <VBox.margin>
                         <Insets left="15.0" right="15.0" />
                      </VBox.margin>
@@ -56,19 +63,19 @@
                   </Label>
                </children>
             </VBox>
-            <VBox prefHeight="62.0" prefWidth="267.0" spacing="4.0">
+            <VBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="103.0" prefWidth="581.0" spacing="4.0" style="-fx-background-color: #EEF1EB; -fx-background-radius: 20;">
                <children>
-                  <Label prefHeight="35.0" prefWidth="126.0" text="Password">
+                  <Label prefHeight="35.0" prefWidth="126.0" text="Password" textFill="#111111">
                      <font>
-                        <Font name="SansSerif Bold" size="24.0" />
+                        <Font name="SansSerif Regular" size="24.0" />
                      </font>
                      <VBox.margin>
                         <Insets bottom="10.0" left="30.0" top="10.0" />
                      </VBox.margin>
                   </Label>
-                  <PasswordField fx:id="passwordField" promptText="*************" style="-fx-border-radius: 10; -fx-background-radius: 10; -fx-background-color: #fdfdfd; -fx-border-color: #f0f0f0;">
+                  <PasswordField fx:id="passwordField" promptText="Tu constraseña" style="-fx-border-radius: 10; -fx-background-radius: 10; -fx-background-color: #ffffffaa;">
                      <font>
-                        <Font name="SansSerif Bold" size="18.0" />
+                        <Font name="SansSerif Regular" size="18.0" />
                      </font>
                      <VBox.margin>
                         <Insets left="15.0" right="15.0" />
@@ -90,10 +97,10 @@
                   </Label>
                </children>
                <VBox.margin>
-                  <Insets bottom="100.0" />
+                  <Insets />
                </VBox.margin>
             </VBox>
-            <Button fx:id="logInButton" mnemonicParsing="false" onMouseClicked="#handleLogIn" prefHeight="52.0" prefWidth="549.0" style="-fx-background-color: #030303; -fx-background-radius: 10; -fx-border-radius: 10;" text="Iniciar Sesion" textAlignment="CENTER" textFill="#fdfdfd">
+            <Button fx:id="logInButton" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#handleLogIn" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="46.0" prefWidth="581.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;" text="Autenticarte" textAlignment="CENTER" textFill="#111111">
                <font>
                   <Font name="SansSerif Regular" size="18.0" />
                </font>
@@ -112,7 +119,7 @@
                   <Separator prefHeight="34.0" prefWidth="259.0" />
                </children>
             </HBox>
-            <Button fx:id="SingInButton" mnemonicParsing="false" onMouseClicked="#switchToSingin" prefHeight="52.0" prefWidth="549.0" style="-fx-background-color: #f2f2f2; -fx-border-radius: 10; -fx-background-radius: 10;" text="Registrate" textFill="#030303">
+            <Button fx:id="SingInButton" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#switchToSingin" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="35.0" prefWidth="612.0" style="-fx-background-color: #C6FF3B; -fx-border-radius: 10; -fx-background-radius: 10; -fx-cursor: hand;" text="Regístrate" textFill="#111111">
                <font>
                   <Font name="SansSerif Bold" size="18.0" />
                </font>

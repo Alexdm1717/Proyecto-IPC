@@ -4,6 +4,7 @@
  */
 package mapademo.singin;
 
+import java.io.File;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -11,11 +12,16 @@ import java.time.format.DateTimeParseException;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField; 
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.FileChooser;
 import mapademo.App;
 import upv.ipc.sportlib.SportActivityApp;
 import upv.ipc.sportlib.User;
@@ -47,6 +53,11 @@ public class SinginPageController implements Initializable {
     private Button SingInButton;
     @FXML
     private Button logInButton;
+    @FXML
+    private ImageView avatarImage;
+
+    // ruta de la foto que ha elegido el usuario, vacia si no ha elegido nada
+    private String selectedAvatarPath = "";
 
     /**
      * Initializes the controller class.
@@ -54,7 +65,44 @@ public class SinginPageController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-    }    
+    }
+
+    // efecto hover: bajamos la opacidad del boton al pasar el raton por encima
+    @FXML
+    private void hoverEnter(MouseEvent e){
+        ((Node) e.getSource()).setOpacity(0.85);
+    }
+
+    @FXML
+    private void hoverExit(MouseEvent e){
+        ((Node) e.getSource()).setOpacity(1.0);
+    }
+
+    // abre un FileChooser para que el usuario elija su foto de perfil
+    @FXML
+    private void chooseAvatar() {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Selecciona avatar");
+        fc.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("Imágenes", "*.png", "*.jpg", "*.jpeg")
+        );
+        File file = fc.showOpenDialog(avatarImage.getScene().getWindow());
+        if (file != null) {
+            selectedAvatarPath = file.getAbsolutePath();
+            Image img = new Image(file.toURI().toString());
+            avatarImage.setImage(img);
+            // recortamos un cuadrado del centro para que se vea bien dentro del circulo
+            double w = img.getWidth();
+            double h = img.getHeight();
+            if (w > 0 && h > 0) {
+                double size = Math.min(w, h);
+                double x = (w - size) / 2;
+                double y = (h - size) / 2;
+                avatarImage.setViewport(new Rectangle2D(x, y, size, size));
+            }
+        }
+    }
+
     
     // alternar entre login / singin.
     @FXML
@@ -71,10 +119,8 @@ public class SinginPageController implements Initializable {
         String password = passwordField.getText();
         String birthText = birthDateField.getText();
         LocalDate birth;
-        
-        // Anadir la selecion de foto
-        String avatarPath = "";
-        //al clicar pone por defecto los mensajes de error en oculto, 
+
+        //al clicar pone por defecto los mensajes de error en oculto,
         //si siguen estando mal se vuelven a activar después
         nameErrorMsg.setVisible(false);                                                                                                                                                       
         emailErrorMsg.setVisible(false);                                                                                                                                                      
@@ -128,7 +174,7 @@ public class SinginPageController implements Initializable {
         }
         
         // Registra el usuario y asignamos el usuario actual
-        SportActivityApp.getInstance().registerUser(nickName, email, password, birth, avatarPath);
+        SportActivityApp.getInstance().registerUser(nickName, email, password, birth, selectedAvatarPath);
         SportActivityApp.getInstance().login(nickName, password);
         
         // Cambia a la aplicacion
