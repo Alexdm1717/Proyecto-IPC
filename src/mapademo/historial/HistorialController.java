@@ -1,6 +1,7 @@
 package mapademo.historial;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
@@ -14,12 +15,14 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -29,12 +32,17 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import mapademo.App;
 import upv.ipc.sportlib.Activity;
+import upv.ipc.sportlib.Annotation;
+import upv.ipc.sportlib.AnnotationType;
+import upv.ipc.sportlib.GeoPoint;
 import upv.ipc.sportlib.MapProjection;
 import upv.ipc.sportlib.MapRegion;
 import upv.ipc.sportlib.SportActivityApp;
@@ -270,7 +278,9 @@ public class HistorialController implements Initializable {
             Point2D pE = currentProjection.project(a.getEndPoint());
             mapPane.getChildren().add(makeMarker(pE, Color.TOMATO, Color.DARKRED));
         }
-
+        
+        drawAnnotations(a);
+        
         // creamos el cursor azul que se ira moviendo por encima del mapa cuando
         // el usuario pase el raton sobre la grafica del perfil de desnivel.
         // Lo dejamos invisible hasta que se haga hover sobre la grafica.
@@ -445,6 +455,100 @@ public class HistorialController implements Initializable {
         long s = total % 60;
         if (h > 0) return String.format("%dh %02dm %02ds", h, m, s);
         return String.format("%dm %02ds", m, s);
+    }
+    
+    
+    private void drawAnnotations(Activity a){
+        List<Annotation> list = a.getAnnotations();
+        for(Annotation ann: list){
+            drawAnnotation(ann);
+        }
+    }
+    
+    private void drawAnnotation(Annotation ann){
+        List<GeoPoint> geos = ann.getGeoPoints();
+        Color color = safeColor(ann.getColor());
+        String tip = buildTooltipText(ann);
+        
+            if(ann.getType() == AnnotationType.POINT) {
+                Point2D p = currentProjection.project(geos.get(0));
+                Circle c = new Circle(9, color);
+                c.setCenterX(p.getX());
+                c.setCenterY(p.getY());
+                c.setStroke(color.darker());
+                c.setStrokeWidth(2);
+                installTooltip(c, tip);
+                mapPane.getChildren().add(c);
+            }
+            
+            if(ann.getType() == AnnotationType.TEXT) {
+                Point2D p = currentProjection.project(geos.get(0));
+                Text t = new Text(ann.getText().isBlank() ? "?" : ann.getText());
+                t.setX(p.getX());
+                t.setY(p.getY());
+                t.setFill(color);
+                t.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+                installTooltip(t, tip);
+                mapPane.getChildren().add(t);
+            }
+            
+            if(ann.getType() == AnnotationType.LINE) {
+                Point2D p1 = currentProjection.project(geos.get(0));
+                Point2D p2 = currentProjection.project(geos.get(1));
+                Line l = new Line(p1.getX(), p1.getY(), p2.getX(), p2.getY());
+                l.setStroke(color);
+                l.setStrokeWidth(ann.getStrokeWidth());
+                installTooltip(l, tip);
+                mapPane.getChildren().add(l);
+            }
+ 
+            if(ann.getType() == AnnotationType.CIRCLE) {
+                Point2D center = currentProjection.project(geos.get(0));
+                Point2D edge   = currentProjection.project(geos.get(1));
+                double  radius = Math.hypot(
+                        edge.getX() - center.getX(),
+                        edge.getY() - center.getY());
+                Circle c = new Circle(radius);
+                c.setCenterX(center.getX());
+                c.setCenterY(center.getY());
+                c.setFill(Color.TRANSPARENT);
+                c.setStroke(color);
+                c.setStrokeWidth(ann.getStrokeWidth());
+                installTooltip(c, tip);
+                mapPane.getChildren().add(c);
+            }
+        
+    }
+    
+    private String buildTooltipText(Annotation ann) {
+        String tipo = "";
+        AnnotationType type = ann.getType();
+        
+        if(type == AnnotationType.POINT){
+            tipo = "Punto ";
+        } else if (type == AnnotationType.TEXT){
+            tipo = "Texto ";
+        } else if (type == AnnotationType.LINE){
+            tipo = "Linea ";
+        } else if (type == AnnotationType.CIRCLE){
+            tipo = "Circulo ";
+        }
+        
+        return ann.getText().isBlank() ? tipo : tipo + ": " + ann.getText();
+    }
+    
+    /** Tooltip que aparece solo al pasar el cursor, no permanentemente. */
+    private void installTooltip(Node node, String text) {
+        Tooltip tip = new Tooltip(text);
+        tip.setShowDelay(javafx.util.Duration.millis(150));
+        tip.setHideDelay(javafx.util.Duration.millis(100));
+        tip.setShowDuration(javafx.util.Duration.seconds(8));
+        Tooltip.install(node, tip);
+    }
+    
+    private Color safeColor(String hex) {
+        try   { return Color.web(hex); }
+        catch (Exception e) { return Color.RED; }
     }
 
 
