@@ -67,15 +67,22 @@ public class SinginPageController implements Initializable {
         // TODO
     }
 
-    // efecto hover: bajamos la opacidad del boton al pasar el raton por encima
+    // efecto hover: el verde claro pasa a verde mas oscuro,
+    // y el gris claro pasa a gris algo mas oscuro
     @FXML
     private void hoverEnter(MouseEvent e){
-        ((Node) e.getSource()).setOpacity(0.85);
+        Node n = (Node) e.getSource();
+        n.setStyle(n.getStyle()
+                .replace("#C6FF3B", "#A1E000")
+                .replace("#dfdfdf", "#cfcfcf"));
     }
 
     @FXML
     private void hoverExit(MouseEvent e){
-        ((Node) e.getSource()).setOpacity(1.0);
+        Node n = (Node) e.getSource();
+        n.setStyle(n.getStyle()
+                .replace("#A1E000", "#C6FF3B")
+                .replace("#cfcfcf", "#dfdfdf"));
     }
 
     // abre un FileChooser para que el usuario elija su foto de perfil

@@ -5,6 +5,7 @@
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.BorderPane?>
@@ -19,7 +20,7 @@
         <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #EEF1EB;">
             <padding><Insets bottom="15.0" left="20.0" right="20.0" top="15.0" /></padding>
             <children>
-                <Button minWidth="120.0" onAction="#volverHome" prefHeight="40.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-cursor: hand;" text="← Volver" textFill="#111111" />
+                <Button minWidth="120.0" onAction="#volverHome" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="40.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-cursor: hand;" text="← Volver" textFill="#111111" />
                 <Region HBox.hgrow="ALWAYS" />
                 <Label text="Historial de sesiones" textFill="#111111">
                     <font><Font name="SansSerif Bold" size="22.0" /></font>
@@ -38,15 +39,11 @@
                 <VBox minWidth="-Infinity" prefWidth="280.0" spacing="10.0" style="-fx-background-color: #EEF1EB; -fx-background-radius: 16;">
                     <padding><Insets bottom="15.0" left="15.0" right="15.0" top="15.0" /></padding>
                     <children>
-                        <Button maxWidth="1.7976931348623157E308" onAction="#importarSesion" prefHeight="40.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-cursor: hand;" text="+ Importar GPX" textFill="#111111">
+                        <Button maxWidth="1.7976931348623157E308" onAction="#importarSesion" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="40.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-cursor: hand;" text="+ Importar GPX" textFill="#111111">
                             <font><Font name="SansSerif Bold" size="14.0" /></font>
                         </Button>
                         <Separator />
-                        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS">
-                            <content>
-                                <VBox fx:id="sessionsListBox" spacing="8.0" style="-fx-background-color: transparent;" />
-                            </content>
-                        </ScrollPane>
+                        <ListView fx:id="sessionsList" style="-fx-background-color: transparent; -fx-background-insets: 0; -fx-padding: 0;" VBox.vgrow="ALWAYS" />
                     </children>
                 </VBox>
 
@@ -135,10 +132,15 @@
                                 <Label fx:id="statAltitud" text="—" textFill="#111111"><font><Font name="SansSerif Bold" size="15.0" /></font></Label>
                             </children>
                         </VBox>
+                  <Separator prefWidth="200.0" />
                         <VBox spacing="2.0">
                             <children>
                                 <Label text="Anotaciones" textFill="#6B7280"><font><Font name="SansSerif Regular" size="12.0" /></font></Label>
                                 <Label fx:id="statAnotaciones" text="—" textFill="#111111"><font><Font name="SansSerif Bold" size="15.0" /></font></Label>
+                        <ListView fx:id="annotationsList" prefHeight="200.0" prefWidth="200.0">
+                           <VBox.margin>
+                              <Insets bottom="5.0" />
+                           </VBox.margin></ListView>
                             </children>
                         </VBox>
                     </children>

@@ -164,7 +164,7 @@
                   </VBox>
                   <Button fx:id="SingInButton" mnemonicParsing="false" onMouseClicked="#handleForm" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="38.0" prefWidth="405.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;" text="Registrarse" textAlignment="CENTER" textFill="#111111">
                      <font>
-                        <Font name="SansSerif Regular" size="16.0" />
+                        <Font name="SansSerif Bold" size="16.0" />
                      </font>
                   </Button>
                   <HBox alignment="CENTER" prefHeight="22.0" prefWidth="555.0" spacing="10.0">
@@ -178,9 +178,9 @@
                         <Separator prefWidth="139.0" />
                      </children>
                   </HBox>
-                  <Button fx:id="logInButton" mnemonicParsing="false" onMouseClicked="#switchToLogin" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="38.0" prefWidth="405.0" style="-fx-background-color: #C6FF3B; -fx-border-radius: 10; -fx-background-radius: 10; -fx-cursor: hand;" text="Inicia Sesion" textFill="#111111">
+                  <Button fx:id="logInButton" mnemonicParsing="false" onMouseClicked="#switchToLogin" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="38.0" prefWidth="405.0" style="-fx-background-color: #dfdfdf; -fx-border-radius: 10; -fx-background-radius: 10; -fx-cursor: hand;" text="Inicia Sesion" textFill="#111111">
                      <font>
-                        <Font name="SansSerif Bold" size="16.0" />
+                        <Font name="SansSerif Regular" size="16.0" />
                      </font>
                   </Button>
                </children>

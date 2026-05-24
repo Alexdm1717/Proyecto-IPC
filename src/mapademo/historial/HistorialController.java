@@ -16,11 +16,14 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
@@ -52,12 +55,15 @@ import upv.ipc.sportlib.TrackPoint;
 public class HistorialController implements Initializable {
 
     // ----- elementos del fxml -----
-    @FXML private VBox sessionsListBox;        // contenedor de las cards de sesiones (izquierda)
+    @FXML private ListView<Activity> sessionsList;  // lista de sesiones (izquierda)
     @FXML private ScrollPane mapScroll;        // scroll que envuelve el mapa
     @FXML private Pane mapPane;                // donde dibujamos el mapa + ruta
     @FXML private LineChart<Number, Number> elevationChart;  // grafica del perfil de desnivel
     @FXML private NumberAxis xAxis;            // eje X de la grafica (distancia en km)
     @FXML private NumberAxis yAxis;            // eje Y de la grafica (altitud en m)
+
+    // lista de anotaciones de la actividad activa (columna derecha, debajo de stats)
+    @FXML private ListView<Annotation> annotationsList;
 
     // labels de las estadisticas (columna derecha)
     @FXML private Label statNombre;
@@ -85,14 +91,69 @@ public class HistorialController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // pintamos la lista de sesiones a la izquierda
-        refreshSessionsList();
+        // ---- configuracion del ListView ----
 
-        // si hay alguna sesion, abrimos la mas reciente por defecto
-        // (asi no se ve la pantalla con el mapa y la grafica vacios al entrar)
-        List<Activity> acts = sortedUserActivities();
-        if (!acts.isEmpty()) {
-            showActivity(acts.get(0));
+        // placeholder: lo que se ve cuando la lista esta vacia
+        Label vacio = new Label("No has importado ninguna sesion todavia");
+        vacio.setTextFill(Color.web("#6B7280"));
+        vacio.setFont(Font.font("SansSerif", 13));
+        vacio.setWrapText(true);
+        sessionsList.setPlaceholder(vacio);
+
+        // cellFactory: como se pinta cada fila (una card visual con nombre/fecha/km)
+        sessionsList.setCellFactory(lv -> {
+            ListCell<Activity> cell = new ListCell<Activity>(){
+                @Override
+                protected void updateItem(Activity a, boolean empty){
+                    super.updateItem(a, empty);
+                    if (empty || a == null){
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        setText(null);
+                        setGraphic(buildSessionCard(a));
+                    }
+                }
+            };
+            // resaltado verde de la fila seleccionada (en vez del azul por defecto)
+            cell.selectedProperty().addListener((obs, antes, ahora) -> {
+                if (ahora) cell.setStyle("-fx-background-color: #C6FF3B;");
+                else cell.setStyle("");
+            });
+            return cell;
+        });
+
+        // al cambiar la seleccion cargamos esa actividad en mapa+grafica+stats
+        sessionsList.getSelectionModel().selectedItemProperty().addListener((obs, antes, ahora) -> {
+            if (ahora != null) showActivity(ahora);
+        });
+
+        // cellFactory de la lista de anotaciones: pintamos "[Tipo] texto"
+        annotationsList.setCellFactory(lv -> new ListCell<Annotation>(){
+            @Override
+            protected void updateItem(Annotation ann, boolean empty){
+                super.updateItem(ann, empty);
+                if (empty || ann == null){
+                    setText(null);
+                } else {
+                    String tipo;
+                    AnnotationType t = ann.getType();
+                    if (t == AnnotationType.POINT) tipo = "Punto";
+                    else if (t == AnnotationType.TEXT) tipo = "Texto";
+                    else if (t == AnnotationType.LINE) tipo = "Linea";
+                    else if (t == AnnotationType.CIRCLE) tipo = "Circulo";
+                    else tipo = "?";
+                    String texto = (ann.getText() == null || ann.getText().isBlank())
+                            ? "(sin texto)" : ann.getText();
+                    setText("[" + tipo + "] " + texto);
+                }
+            }
+        });
+
+        // pintamos las sesiones y seleccionamos la mas reciente por defecto
+        refreshSessionsList();
+        if (!sessionsList.getItems().isEmpty()){
+            sessionsList.getSelectionModel().selectFirst();
         }
     }
 
@@ -101,33 +162,24 @@ public class HistorialController implements Initializable {
     // LISTA DE SESIONES (columna izquierda)
     // =================================================================
 
-    // Llena el VBox de la izquierda con una card por cada sesion del usuario
+    // Refresca los items del ListView con las sesiones del usuario actual
     private void refreshSessionsList() {
-        sessionsListBox.getChildren().clear();
-        List<Activity> acts = sortedUserActivities();
-
-        if (acts.isEmpty()) {
-            // si no hay ninguna sesion ponemos un mensajito
-            Label vacio = new Label("No has importado ninguna sesion todavia");
-            vacio.setTextFill(Color.web("#6B7280"));
-            vacio.setFont(Font.font("SansSerif", 13));
-            vacio.setWrapText(true);
-            sessionsListBox.getChildren().add(vacio);
-            return;
-        }
-
-        for (Activity a : acts) {
-            sessionsListBox.getChildren().add(buildSessionCard(a));
-        }
+        sessionsList.getItems().setAll(sortedUserActivities());
     }
 
-    // Sesiones del usuario actual, mas recientes primero
+    // Sesiones del usuario actual, mas recientes primero.
+    // Si dos tienen la misma fecha, desempata por id (la mas recien anadida
+    // tiene id mas alto en BBDD), tambien descendente.
     private List<Activity> sortedUserActivities() {
         List<Activity> list = new ArrayList<>();
         List<Activity> fromApp = SportActivityApp.getInstance().getUserActivities();
         if (fromApp != null) list.addAll(fromApp);
         // copiamos a ArrayList para evitar que la lista venga inmutable y .sort pete
-        list.sort(Comparator.comparing(Activity::getStartTime).reversed());
+        list.sort(
+            Comparator.comparing(Activity::getStartTime)
+                .thenComparingLong(Activity::getId)
+                .reversed()
+        );
         return list;
     }
 
@@ -162,9 +214,6 @@ public class HistorialController implements Initializable {
         km.setFont(Font.font("SansSerif", FontWeight.BOLD, 13));
 
         card.getChildren().addAll(left, sp, km);
-
-        // listener para que al clicar en la card se cargue esta actividad
-        card.setOnMouseClicked(e -> showActivity(a));
         return card;
     }
 
@@ -177,7 +226,7 @@ public class HistorialController implements Initializable {
         FileChooser fc = new FileChooser();
         fc.setInitialDirectory(new File("."));
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Rutas GPX", "*.gpx"));
-        File f = fc.showOpenDialog(sessionsListBox.getScene().getWindow());
+        File f = fc.showOpenDialog(sessionsList.getScene().getWindow());
         if (f == null) return;  // ha cancelado el dialogo
 
         // la libreria parsea el GPX y crea la Activity en la BBDD
@@ -186,9 +235,10 @@ public class HistorialController implements Initializable {
             new Alert(Alert.AlertType.ERROR, "No se pudo importar el GPX").showAndWait();
             return;
         }
-        // refrescamos la lista y abrimos la sesion recien importada
+        // refrescamos la lista y dejamos seleccionada la sesion recien importada
+        // (el listener de seleccion se encarga de cargarla en mapa/grafica/stats)
         refreshSessionsList();
-        showActivity(a);
+        sessionsList.getSelectionModel().select(a);
     }
 
 
@@ -442,8 +492,13 @@ public class HistorialController implements Initializable {
                 a.getMinElevation(), a.getMaxElevation()));
 
         // numero de anotaciones que el usuario haya hecho en esta sesion
-        int numAnotaciones = (a.getAnnotations() != null) ? a.getAnnotations().size() : 0;
+        List<Annotation> anns = a.getAnnotations();
+        int numAnotaciones = (anns != null) ? anns.size() : 0;
         statAnotaciones.setText(String.valueOf(numAnotaciones));
+
+        // rellenamos tambien la lista de anotaciones de la columna derecha
+        annotationsList.getItems().clear();
+        if (anns != null) annotationsList.getItems().addAll(anns);
     }
 
     // Formatea un Duration tipo "1h 23m 45s" o "23m 45s" si no llega a la hora
@@ -562,5 +617,25 @@ public class HistorialController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    // =================================================================
+    // HOVER de los botones (cambian de verde claro a verde oscuro)
+    // =================================================================
+    @FXML
+    private void hoverEnter(MouseEvent e){
+        Node n = (Node) e.getSource();
+        n.setStyle(n.getStyle()
+                .replace("#C6FF3B", "#A1E000")
+                .replace("#dfdfdf", "#cfcfcf"));
+    }
+
+    @FXML
+    private void hoverExit(MouseEvent e){
+        Node n = (Node) e.getSource();
+        n.setStyle(n.getStyle()
+                .replace("#A1E000", "#C6FF3B")
+                .replace("#cfcfcf", "#dfdfdf"));
     }
 }

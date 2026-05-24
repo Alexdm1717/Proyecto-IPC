@@ -9,12 +9,14 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import mapademo.App;
 import upv.ipc.sportlib.SportActivityApp;
@@ -141,6 +143,23 @@ public class ProfileController implements Initializable {
         } else {
             new Alert(Alert.AlertType.ERROR, "No se pudieron guardar los cambios").showAndWait();
         }
+    }
+
+    // hover: verde claro -> verde mas oscuro, y gris claro -> gris mas oscuro
+    @FXML
+    private void hoverEnter(MouseEvent e){
+        Node n = (Node) e.getSource();
+        n.setStyle(n.getStyle()
+                .replace("#C6FF3B", "#A1E000")
+                .replace("#dfdfdf", "#cfcfcf"));
+    }
+
+    @FXML
+    private void hoverExit(MouseEvent e){
+        Node n = (Node) e.getSource();
+        n.setStyle(n.getStyle()
+                .replace("#A1E000", "#C6FF3B")
+                .replace("#cfcfcf", "#dfdfdf"));
     }
 
     @FXML

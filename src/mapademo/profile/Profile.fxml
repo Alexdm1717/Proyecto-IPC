@@ -19,7 +19,7 @@
         <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #EEF1EB;">
             <padding><Insets bottom="15.0" left="20.0" right="20.0" top="15.0" /></padding>
             <children>
-                <Button minWidth="120.0" onAction="#volverHome" prefHeight="40.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-cursor: hand;" text="← Volver" textFill="#111111" />
+                <Button minWidth="120.0" onAction="#volverHome" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="40.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-cursor: hand;" text="← Volver" textFill="#111111" />
                 <Region HBox.hgrow="ALWAYS" />
                 <Label text="Perfil" textFill="#111111">
                     <font><Font name="SansSerif Bold" size="22.0" /></font>
@@ -33,7 +33,7 @@
         <VBox alignment="TOP_CENTER" fillWidth="false" spacing="0.0">
             <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
             <children>
-                <Button maxHeight="100.0" maxWidth="100.0" minHeight="100.0" minWidth="100.0" onAction="#chooseAvatar" prefHeight="100.0" prefWidth="100.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 50%; -fx-cursor: hand; -fx-border-color: #C6FF3B80; -fx-border-radius: 50%;">
+                <Button maxHeight="100.0" maxWidth="100.0" minHeight="100.0" minWidth="100.0" onAction="#chooseAvatar" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="100.0" prefWidth="100.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 50%; -fx-cursor: hand; -fx-border-color: #C6FF3B80; -fx-border-radius: 50%;">
                     <graphic>
                         <ImageView fx:id="avatarImage" fitHeight="92.0" fitWidth="92.0" preserveRatio="false" smooth="true">
                             <image><Image url="@../../resources/perfil.png" /></image>
@@ -126,7 +126,7 @@
 
                 <Region VBox.vgrow="ALWAYS" />
 
-                <Button onAction="#applyChanges" prefHeight="48.0" prefWidth="549.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;" text="Aplicar cambios" textAlignment="CENTER" textFill="#111111">
+                <Button onAction="#applyChanges" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="48.0" prefWidth="549.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;" text="Aplicar cambios" textAlignment="CENTER" textFill="#111111">
                     <font><Font name="SansSerif Regular" size="18.0" /></font>
                 </Button>
             </children>

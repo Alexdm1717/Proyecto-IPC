@@ -38,8 +38,12 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.GridPane;
+import javafx.scene.input.MouseEvent;
+import javafx.geometry.Pos;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -176,6 +180,12 @@ public class MainController implements Initializable {
     // -----------------------------------------------------------------
     // Carga fichero GPX
     // -----------------------------------------------------------------
+    //
+    // Actividad "pendiente": la lib persiste en BBDD al hacer importActivity,
+    // asi que no hay forma de tener una Activity sin guardarla. La marcamos
+    // como pendiente y la borramos si el usuario abandona sin pulsar Guardar.
+    private Activity pendingActivity = null;
+
     @FXML
     private void loadFile(ActionEvent event){
         FileChooser fc = new FileChooser();
@@ -183,18 +193,69 @@ public class MainController implements Initializable {
         fc.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("Rutas GPX", "*.gpx")
         );
-        
+
         File f = fc.showOpenDialog(zoom_slider.getScene().getWindow());
         if(f == null) return;
-        
+
+        // si habia otra actividad pendiente (importada y aun no guardada),
+        // la quitamos de la BBDD antes de meter la nueva
+        descartarPendiente();
+
         Activity activity = app.importActivity(f);
         if(activity == null) return;
-        
+
+        pendingActivity = activity;
+
         if(!activities_listview.getItems().contains(activity)){
             activities_listview.getItems().add(activity);
         }
-        
+
         showActivity(activity);
+    }
+
+    // Borra la actividad pendiente de BBDD (si la hay) y la quita de la lista.
+    // Se llama cuando el usuario abandona la pantalla sin guardar, o importa otra.
+    private void descartarPendiente(){
+        if(pendingActivity != null){
+            app.removeActivity(pendingActivity);
+            activities_listview.getItems().remove(pendingActivity);
+            pendingActivity = null;
+        }
+    }
+
+    // Botón "Guardar actividad": confirma que la pendiente se queda en el historial
+    @FXML
+    private void guardarActividad(){
+        if(pendingActivity == null){
+            // no hay nada que guardar
+            new javafx.scene.control.Alert(
+                javafx.scene.control.Alert.AlertType.WARNING,
+                "No hay ninguna actividad cargada para guardar"
+            ).showAndWait();
+            return;
+        }
+        // simplemente la "promovemos" a guardada: ya estaba en BBDD, ahora la dejamos ahi
+        pendingActivity = null;
+
+        // limpiamos la pantalla para que se pueda cargar otra actividad
+        resetMainUI();
+
+        // confirmacion al usuario
+        new javafx.scene.control.Alert(
+            javafx.scene.control.Alert.AlertType.INFORMATION,
+            "Actividad guardada en el historial"
+        ).showAndWait();
+    }
+
+    // Deja la pantalla del main como recien abierta (sin actividad cargada)
+    private void resetMainUI(){
+        currentActivity = null;
+        currentProjection = null;
+        cancelPending();
+        activities_listview.getItems().clear();
+        annotations_listview.getItems().clear();
+        if(map_pane != null) map_pane.getChildren().clear();
+        map_scrollpane.setContent(null);
     }
     
     // -----------------------------------------------------------------
@@ -400,27 +461,33 @@ public class MainController implements Initializable {
     }
     
     
-    // Anotacion de 1 punto: mostrar dialogo y guardar directamente
+    // Anotacion de 1 punto: mostrar dialogo y guardar directamente.
+    // Diferimos con runLater para que el ContextMenu termine de cerrarse antes de abrir
+    // el dialogo (si no, en Linux el dialogo se renderiza detras de la ventana principal).
     private void startOnePointAnnotation(AnnotationType type, double mapX, double mapY){
-        Optional<String[]> res = showAnnotationDialog(type);
-        if(res.isEmpty()) return;
-        
-        GeoPoint geo = currentProjection.unproject(mapX, mapY);
-        saveAnnotation(type, res.get()[0], res.get()[1], List.of(geo));
+        Platform.runLater(() -> {
+            Optional<String[]> res = showAnnotationDialog(type);
+            if(res.isEmpty()) return;
+
+            GeoPoint geo = currentProjection.unproject(mapX, mapY);
+            saveAnnotation(type, res.get()[0], res.get()[1], List.of(geo));
+        });
     }
-    
-    
-    // Anotatcion de 2 puntos: dialogo -> esperar 2.o clic izquierdo
+
+
+    // Anotacion de 2 puntos: dialogo -> esperar 2.o clic izquierdo
     private void startTwoPointAnnotation(AnnotationType type, double mapX, double mapY){
-        Optional<String[]> res = showAnnotationDialog(type);
-        if (res.isEmpty()) return;
-        
-        pendingText = res.get()[0];
-        pendingColor = res.get()[1];
-        pendingType = type;
-        pendingPoints.clear();
-        pendingPoints.add(currentProjection.unproject(mapX, mapY));
-        map_pane.setStyle("-fx-cursor: crosshair;");
+        Platform.runLater(() -> {
+            Optional<String[]> res = showAnnotationDialog(type);
+            if (res.isEmpty()) return;
+
+            pendingText = res.get()[0];
+            pendingColor = res.get()[1];
+            pendingType = type;
+            pendingPoints.clear();
+            pendingPoints.add(currentProjection.unproject(mapX, mapY));
+            map_pane.setStyle("-fx-cursor: crosshair;");
+        });
     }
     
     private void cancelPending(){
@@ -448,26 +515,60 @@ public class MainController implements Initializable {
         
         Dialog<String[]> dialog = new Dialog<>();
         dialog.setTitle("Nueva anotacion");
-        dialog.setHeaderText(header);
-        
+        dialog.initOwner(map_pane.getScene().getWindow());
+        dialog.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+        dialog.setResizable(true);
+
         ButtonType okBtn = new ButtonType("Aceptar", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(okBtn, ButtonType.CANCEL);
-        
+
+        // Header como Label dentro del contenido (no usamos setHeaderText porque a veces
+        // colapsa el DialogPane en Linux y deja los campos enanos)
+        Label headerLabel = new Label(header);
+        headerLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
+        headerLabel.setWrapText(true);
+        headerLabel.setMinWidth(380);
+
+        // Fila Texto:
+        Label tLabel = new Label("Texto:");
+        tLabel.setMinWidth(60);
         TextField textField = new TextField();
         textField.setPromptText("Texto (opcional)");
+        textField.setPrefWidth(300);
+        HBox.setHgrow(textField, Priority.ALWAYS);
+        HBox row1 = new HBox(10, tLabel, textField);
+        row1.setAlignment(Pos.CENTER_LEFT);
+
+        // Fila Color:
+        Label cLabel = new Label("Color:");
+        cLabel.setMinWidth(60);
         ColorPicker colorPicker = new ColorPicker(Color.web("#E63946"));
         colorPicker.setPrefWidth(Double.MAX_VALUE);
-        
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(12));
-        grid.add(new Label("Texto:"), 0, 0);
-        grid.add(textField,   1, 0);
-        grid.add(new Label("Color:"), 0, 1);
-        grid.add(colorPicker, 1, 1);
-        dialog.getDialogPane().setContent(grid);
-        
+        HBox.setHgrow(colorPicker, Priority.ALWAYS);
+        HBox row2 = new HBox(10, cLabel, colorPicker);
+        row2.setAlignment(Pos.CENTER_LEFT);
+
+        VBox content = new VBox(12, headerLabel, row1, row2);
+        content.setPadding(new Insets(15));
+        content.setMinSize(440, 160);
+        content.setPrefSize(440, 160);
+        dialog.getDialogPane().setContent(content);
+
+        // Tamano del DialogPane y del Stage forzados a la vez (Linux a veces ignora uno u otro)
+        dialog.getDialogPane().setMinSize(460, 220);
+        dialog.getDialogPane().setPrefSize(460, 220);
+
+        dialog.setOnShown(ev -> {
+            javafx.stage.Stage st = (javafx.stage.Stage) dialog.getDialogPane().getScene().getWindow();
+            st.setMinWidth(460);
+            st.setMinHeight(220);
+            st.setWidth(460);
+            st.setHeight(220);
+            st.centerOnScreen();
+            st.toFront();
+            textField.requestFocus();
+        });
+
         dialog.setResultConverter(btn -> {
             if (btn != okBtn) return null;
             Color c = colorPicker.getValue();
@@ -477,7 +578,7 @@ public class MainController implements Initializable {
                     (int)(c.getBlue()  * 255));
             return new String[]{ textField.getText().trim(), hex };
         });
-        
+
         return dialog.showAndWait();
     }
     
@@ -611,9 +712,28 @@ public class MainController implements Initializable {
     }
     @FXML
     private void VolverHome(){
+        // si se va sin pulsar Guardar, descartamos la actividad pendiente
+        descartarPendiente();
         try{
             App.getInstance().switchToHome();
         }catch(Exception e){e.printStackTrace();}
-    
+
+    }
+
+    // hover: verde claro -> verde mas oscuro, y gris claro -> gris mas oscuro
+    @FXML
+    private void hoverEnter(MouseEvent e){
+        Node n = (Node) e.getSource();
+        n.setStyle(n.getStyle()
+                .replace("#C6FF3B", "#A1E000")
+                .replace("#dfdfdf", "#cfcfcf"));
+    }
+
+    @FXML
+    private void hoverExit(MouseEvent e){
+        Node n = (Node) e.getSource();
+        n.setStyle(n.getStyle()
+                .replace("#A1E000", "#C6FF3B")
+                .replace("#cfcfcf", "#dfdfdf"));
     }
 }

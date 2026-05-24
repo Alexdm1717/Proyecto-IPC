@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -36,7 +37,7 @@
                 <VBox alignment="TOP_CENTER" prefWidth="320.0" spacing="14.0" style="-fx-background-color: #EEF1EB; -fx-background-radius: 16;">
                     <padding><Insets bottom="25.0" left="20.0" right="20.0" top="30.0" /></padding>
                     <children>
-                        <Button contentDisplay="GRAPHIC_ONLY" maxHeight="120.0" maxWidth="120.0" minHeight="120.0" minWidth="120.0" onAction="#openProfile" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 50%; -fx-cursor: hand;">
+                        <Button contentDisplay="GRAPHIC_ONLY" maxHeight="120.0" maxWidth="120.0" minHeight="120.0" minWidth="120.0" onAction="#openProfile" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 50%; -fx-cursor: hand;">
                             <graphic>
                                 <ImageView fx:id="profileImage" fitHeight="120.0" fitWidth="120.0" preserveRatio="false" smooth="true">
                                     <image><Image url="@../../resources/perfil.png" /></image>
@@ -53,7 +54,7 @@
                             <font><Font name="SansSerif Regular" size="14.0" /></font>
                         </Label>
                         <Region VBox.vgrow="ALWAYS" />
-                        <Button maxWidth="1.7976931348623157E308" onAction="#openProfile" prefHeight="42.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-cursor: hand;" text="Editar perfil" textFill="#111111">
+                        <Button maxWidth="1.7976931348623157E308" onAction="#openProfile" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="42.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-cursor: hand;" text="Editar perfil" textFill="#111111">
                             <font><Font name="SansSerif Bold" size="15.0" /></font>
                         </Button>
                     </children>
@@ -92,9 +93,9 @@
                             <padding><Insets top="8.0" /></padding>
                             <font><Font name="SansSerif Bold" size="18.0" /></font>
                         </Label>
-                        <VBox fx:id="recentSessionsBox" spacing="8.0" />
+                        <ListView fx:id="recentSessionsList" prefHeight="425.0" prefWidth="560.0" style="-fx-background-color: transparent; -fx-background-insets: 0; -fx-padding: 0;" />
                         <Region VBox.vgrow="ALWAYS" />
-                        <Button maxWidth="1.7976931348623157E308" onAction="#openHistorial" prefHeight="42.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-cursor: hand;" text="Ver historial completo de sesiones" textFill="#111111">
+                        <Button maxWidth="1.7976931348623157E308" onAction="#openHistorial" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="42.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-cursor: hand;" text="Ver historial completo de sesiones" textFill="#111111">
                             <font><Font name="SansSerif Bold" size="15.0" /></font>
                      <VBox.margin>
                         <Insets bottom="25.0" />
@@ -114,7 +115,7 @@
                             <font><Font name="SansSerif Regular" size="14.0" /></font>
                         </Label>
                         <Region VBox.vgrow="ALWAYS" />
-                        <Button maxWidth="1.7976931348623157E308" onAction="#startNewSession" prefHeight="80.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 14; -fx-cursor: hand;" text="Nueva sesion" textFill="#111111">
+                        <Button maxWidth="1.7976931348623157E308" onAction="#startNewSession" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="80.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 14; -fx-cursor: hand;" text="Nueva sesion" textFill="#111111">
                             <font><Font name="SansSerif Bold" size="22.0" /></font>
                         </Button>
                     </children>
