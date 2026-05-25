@@ -122,6 +122,12 @@
                         </VBox>
                         <VBox spacing="2.0">
                             <children>
+                                <Label text="Ritmo medio" textFill="#6B7280"><font><Font name="SansSerif Regular" size="12.0" /></font></Label>
+                                <Label fx:id="statRitmo" text="—" textFill="#111111"><font><Font name="SansSerif Bold" size="15.0" /></font></Label>
+                            </children>
+                        </VBox>
+                        <VBox spacing="2.0">
+                            <children>
                                 <Label text="Ascenso / Descenso" textFill="#6B7280"><font><Font name="SansSerif Regular" size="12.0" /></font></Label>
                                 <Label fx:id="statDesnivel" text="—" textFill="#111111"><font><Font name="SansSerif Bold" size="15.0" /></font></Label>
                             </children>

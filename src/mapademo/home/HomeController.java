@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.time.Duration;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -41,6 +42,9 @@ public class HomeController implements Initializable {
     @FXML private Label emailLabel;
     @FXML private Label sessionsCountLabel;
     @FXML private Label kmThisMonthLabel;
+    @FXML private Label totalTimeLabel;
+    @FXML private Label totalGainLabel;
+    @FXML private Label totalLossLabel;
     // ListView<Object> porque mezclamos Activity (cards normales) con la string "..."
     // que indica que hay mas sesiones de las que caben
     @FXML private ListView<Object> recentSessionsList;
@@ -103,19 +107,37 @@ public class HomeController implements Initializable {
                 .reversed()
         );
 
-        // numero total de sesiones (todas las que tiene el usuario, sin filtrar por fecha)
-        sessionsCountLabel.setText(String.valueOf(activities.size()));
-
-        // kilometros recorridos en los ultimos 30 dias.
-        // getTotalDistance() viene en METROS, asi que despues dividimos entre 1000
+        // Filtramos las actividades de los ultimos 30 dias. TODAS las stats
+        // de la seccion "progreso de este ultimo mes" usan este subset.
         LocalDateTime haceUnMes = LocalDateTime.now().minusDays(30);
-        double metrosUltimoMes = 0;
+        List<Activity> ultimoMes = new ArrayList<>();
         for (Activity a : activities) {
             if (a.getStartTime() != null && a.getStartTime().isAfter(haceUnMes)) {
-                metrosUltimoMes += a.getTotalDistance();
+                ultimoMes.add(a);
             }
         }
-        kmThisMonthLabel.setText(String.format("%.1f km", metrosUltimoMes / 1000.0));
+
+        // numero de sesiones en el ultimo mes
+        sessionsCountLabel.setText(String.valueOf(ultimoMes.size()));
+
+        // distancia, tiempo, ascenso y descenso acumulados en el ultimo mes
+        double metrosTotal = 0;
+        long segundosTotal = 0;
+        double ascensoTotal = 0;
+        double descensoTotal = 0;
+        for (Activity a : ultimoMes) {
+            metrosTotal += a.getTotalDistance();
+            Duration d = a.getDuration();
+            if (d != null) segundosTotal += d.getSeconds();
+            ascensoTotal += a.getElevationGain();
+            descensoTotal += a.getElevationLoss();
+        }
+        kmThisMonthLabel.setText(String.format("%.1f km", metrosTotal / 1000.0));
+        long horas = segundosTotal / 3600;
+        long mins = (segundosTotal % 3600) / 60;
+        totalTimeLabel.setText(String.format("%dh %dm", horas, mins));
+        totalGainLabel.setText(String.format("%.0f m", ascensoTotal));
+        totalLossLabel.setText(String.format("%.0f m", descensoTotal));
 
         // ---- ultimas sesiones (en el ListView) ----
         allActivities = activities;
@@ -283,6 +305,17 @@ public class HomeController implements Initializable {
     private void openProfile() {
         try {
             App.getInstance().switchToProfile();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // cierra la sesion del usuario actual y vuelve al login
+    @FXML
+    private void cerrarSesion() {
+        SportActivityApp.getInstance().logout();
+        try {
+            App.getInstance().switchToLogin();
         } catch (Exception e) {
             e.printStackTrace();
         }

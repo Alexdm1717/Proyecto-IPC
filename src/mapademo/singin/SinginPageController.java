@@ -14,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -64,7 +65,14 @@ public class SinginPageController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        // Bindeamos managed a visible para que cuando un label de error se haga visible
+        // tambien ocupe espacio en el layout (los teniamos con managed=false
+        // para que no ocuparan al estar ocultos, pero eso hacia que al ponerlos
+        // visibles no se vieran porque el padre no les reservaba sitio).
+        nameErrorMsg.managedProperty().bind(nameErrorMsg.visibleProperty());
+        emailErrorMsg.managedProperty().bind(emailErrorMsg.visibleProperty());
+        PasswordErrorMsg.managedProperty().bind(PasswordErrorMsg.visibleProperty());
+        dateErrorMsg.managedProperty().bind(dateErrorMsg.visibleProperty());
     }
 
     // efecto hover: el verde claro pasa a verde mas oscuro,
@@ -173,18 +181,36 @@ public class SinginPageController implements Initializable {
             dateErrorMsg.setVisible(true);
             return;
         }
-        boolean ageOk = User.isOlderThan(birth, 16);
+        boolean ageOk = User.isOlderThan(birth, 12);
         if(!ageOk){
-            dateErrorMsg.setText("Tienes que tener mas de 16");
+            dateErrorMsg.setText("Tienes que tener mas de 12");
             dateErrorMsg.setVisible(true);
             return;
         }
-        
-        // Registra el usuario y asignamos el usuario actual
-        SportActivityApp.getInstance().registerUser(nickName, email, password, birth, selectedAvatarPath);
+
+        // Intenta registrar. Si devuelve false significa que el nick ya existe o
+        // algo ha fallado al guardar en BBDD. Antes lo ignorabamos y seguia adelante
+        // intentando hacer login con un usuario que no existia, sin avisar al usuario.
+        boolean ok = SportActivityApp.getInstance().registerUser(
+                nickName, email, password, birth, selectedAvatarPath);
+        if(!ok){
+            nameErrorMsg.setText("Ese nombre de usuario ya existe");
+            nameErrorMsg.setVisible(true);
+            return;
+        }
+
+        // Registrado correctamente: mostramos dialogo de bienvenida con los datos
+        // y entramos directamente al home
+        Alert ok_dialog = new Alert(Alert.AlertType.INFORMATION,
+                "Bienvenido a Running La Safor\n"
+                + "Nombre de usuario: " + nickName + "\n"
+                + "Contraseña: " + password);
+        ok_dialog.setHeaderText(null);
+        ok_dialog.setTitle("Registro completado");
+        ok_dialog.showAndWait();
+
+        // hacemos login para que el currentUser quede asignado y entramos al home
         SportActivityApp.getInstance().login(nickName, password);
-        
-        // Cambia a la aplicacion
         try{
             App.getInstance().switchToHome();
         }catch(Exception e){}

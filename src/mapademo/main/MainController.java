@@ -2,6 +2,7 @@ package mapademo.main;
 
 
 import mapademo.App;
+import mapademo.util.MapDialogs;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -68,6 +69,8 @@ public class MainController implements Initializable {
     @FXML private Slider zoom_slider;
     @FXML private ScrollPane map_scrollpane;
     @FXML private Pane map_pane;
+    @FXML private Button switch_map_button;
+    @FXML private Button add_map_button;
     
     
     // Listas laterales
@@ -108,6 +111,10 @@ public class MainController implements Initializable {
         zoom_slider.valueProperty().addListener(
                 (obs, o, n) -> zoom(n.doubleValue())
         );
+
+        // de inicio no hay actividad cargada, asi que los dos botones de mapa
+        // arrancan deshabilitados hasta que el usuario suba un GPX
+        refreshMapButtons();
         
         // CellFactory: Actividades
         activities_listview.setCellFactory(lv -> new ListCell<Activity>(){
@@ -256,6 +263,7 @@ public class MainController implements Initializable {
         annotations_listview.getItems().clear();
         if(map_pane != null) map_pane.getChildren().clear();
         map_scrollpane.setContent(null);
+        refreshMapButtons();
     }
     
     // -----------------------------------------------------------------
@@ -265,6 +273,7 @@ public class MainController implements Initializable {
     private void showActivity(Activity activity){
         currentActivity = activity;
         cancelPending();
+        refreshMapButtons();
         
         MapRegion region = activity.getSuggestedMap();
         
@@ -698,17 +707,50 @@ public class MainController implements Initializable {
     
     
     // ─────────────────────────────────────────────────────────────────────────
-    // Cambiar mapa manualmente (sin GPX)
+    // Agregar / Cambiar mapa
     // ─────────────────────────────────────────────────────────────────────────
+    //
+    // "Agregar mapa": para cuando la actividad cargada no tiene mapa todavia.
+    // Solo esta habilitado en ese caso.
     @FXML
-    private void cambiarMapa(ActionEvent event) throws IOException {
-        FileChooser fc = new FileChooser();
-        fc.setInitialDirectory(new File("."));
-        fc.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Imagenes", "*.png", "*.jpg", "*.jpeg"));
-        File f = fc.showOpenDialog(zoom_slider.getScene().getWindow());
-        if (f == null) return;
-        buildMap(f);
+    private void agregarMapa(ActionEvent event){
+        boolean added = MapDialogs.showAddMapDialog(map_scrollpane.getScene().getWindow());
+        if (added && currentActivity != null){
+            // recargamos la actividad para que la libreria asocie el nuevo MapRegion
+            // (getSuggestedMap selecciona el mapa cuyo bounding box contiene los puntos)
+            showActivity(currentActivity);
+        }
+    }
+
+    // "Cambiar mapa": el usuario quiere cambiar el mapa actual por otro distinto.
+    // Pide los mismos datos (imagen + bounding box).
+    @FXML
+    private void cambiarMapa(ActionEvent event){
+        boolean added = MapDialogs.showAddMapDialog(map_scrollpane.getScene().getWindow());
+        if (added && currentActivity != null){
+            showActivity(currentActivity);
+        }
+    }
+
+    // Activa/desactiva los botones de mapa segun la actividad cargada.
+    // Si la actividad tiene mapa -> Cambiar habilitado, Agregar deshabilitado.
+    // Si la actividad NO tiene mapa -> Agregar habilitado, Cambiar deshabilitado.
+    // Si no hay actividad cargada -> los dos deshabilitados.
+    //
+    // Ojo: la libreria puede devolver un MapRegion para una actividad aunque
+    // el JPG no exista en disco (ej: pirineos esta registrado pero el archivo
+    // puede no haberse generado todavia con el script python). Por eso comprobamos
+    // tambien si la imagen existe fisicamente.
+    private void refreshMapButtons(){
+        if (switch_map_button == null || add_map_button == null) return;
+        boolean hayActividad = currentActivity != null;
+        boolean tieneMapa = false;
+        if (hayActividad){
+            MapRegion mr = currentActivity.getSuggestedMap();
+            tieneMapa = mr != null && new File(mr.getImagePath()).exists();
+        }
+        switch_map_button.setDisable(!tieneMapa);
+        add_map_button.setDisable(!hayActividad || tieneMapa);
     }
     @FXML
     private void VolverHome(){

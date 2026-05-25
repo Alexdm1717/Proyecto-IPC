@@ -124,7 +124,10 @@
         <!-- Controles superpuestos en la barra superior -->
         <Pane prefHeight="80.0" prefWidth="780.0">
           <children>
-            <Button fx:id="switch_map_button" layoutX="253.0" layoutY="22.0" mnemonicParsing="false" onAction="#cambiarMapa" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="36.0" prefWidth="274.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;" text="Cambiar mapa">
+            <Button fx:id="switch_map_button" layoutX="118.0" layoutY="22.0" mnemonicParsing="false" onAction="#cambiarMapa" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="36.0" prefWidth="200.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;" text="Cambiar mapa">
+              <font><Font name="SansSerif Regular" size="16.0" /></font>
+            </Button>
+            <Button fx:id="add_map_button" layoutX="334.0" layoutY="22.0" mnemonicParsing="false" onAction="#agregarMapa" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="36.0" prefWidth="200.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;" text="Agregar mapa">
               <font><Font name="SansSerif Regular" size="16.0" /></font>
             </Button>
 

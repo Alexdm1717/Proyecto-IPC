@@ -13,7 +13,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="800.0" prefWidth="1280.0" style="-fx-background-color: #F7F8F5;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.home.HomeController">
+<BorderPane prefHeight="800.0" prefWidth="1280.0" style="-fx-background-color: #F7F8F5;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mapademo.home.HomeController">
     <top>
         <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #EEF1EB;">
             <padding><Insets bottom="15.0" left="20.0" right="20.0" top="15.0" /></padding>
@@ -25,6 +25,11 @@
                     <font><Font name="SansSerif Bold" size="20.0" /></font>
                 </Label>
                 <Region HBox.hgrow="ALWAYS" />
+            <Button mnemonicParsing="false" onAction="#cerrarSesion" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="37.0" prefWidth="165.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-cursor: hand;" text="Cerrar sesion">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Button>
             </children>
         </HBox>
     </top>
@@ -55,7 +60,7 @@
                         </Label>
                         <Region VBox.vgrow="ALWAYS" />
                         <Button maxWidth="1.7976931348623157E308" onAction="#openProfile" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="42.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-cursor: hand;" text="Editar perfil" textFill="#111111">
-                            <font><Font name="SansSerif Bold" size="15.0" /></font>
+                            <font><Font name="SansSerif Regular" size="15.0" /></font>
                         </Button>
                     </children>
                 </VBox>
@@ -63,27 +68,71 @@
                 <!-- ============== COLUMNA CENTRAL: estadisticas + sesiones ============== -->
                 <VBox spacing="14.0" HBox.hgrow="ALWAYS">
                     <children>
+                        <!-- Titulo de la seccion: asi no hace falta repetir "del mes" en cada card -->
+                        <Label text="Progreso de este ultimo mes:" textFill="#111111">
+                            <font><Font name="SansSerif Bold" size="18.0" /></font>
+                        </Label>
+                        <!-- Fila 1: sesiones + distancia + tiempo (todos del ultimo mes) -->
                         <HBox spacing="14.0">
                             <children>
-                                <VBox alignment="CENTER" prefHeight="100.0" spacing="2.0" style="-fx-background-color: #EEF1EB; -fx-background-radius: 16;" HBox.hgrow="ALWAYS">
-                                    <padding><Insets bottom="15.0" left="15.0" right="15.0" top="15.0" /></padding>
+                                <VBox alignment="CENTER" prefHeight="90.0" spacing="2.0" style="-fx-background-color: #EEF1EB; -fx-background-radius: 16;" HBox.hgrow="ALWAYS">
+                                    <padding><Insets bottom="12.0" left="10.0" right="10.0" top="12.0" /></padding>
                                     <children>
                                         <Label fx:id="sessionsCountLabel" text="0" textFill="#111111">
-                                            <font><Font name="SansSerif Bold" size="36.0" /></font>
+                                            <font><Font name="SansSerif Bold" size="28.0" /></font>
                                         </Label>
-                                        <Label text="Sesiones registradas" textFill="#6B7280">
-                                            <font><Font name="SansSerif Regular" size="13.0" /></font>
+                                        <Label text="Sesiones" textFill="#6B7280">
+                                            <font><Font name="SansSerif Regular" size="12.0" /></font>
                                         </Label>
                                     </children>
                                 </VBox>
-                                <VBox alignment="CENTER" prefHeight="100.0" spacing="2.0" style="-fx-background-color: #EEF1EB; -fx-background-radius: 16;" HBox.hgrow="ALWAYS">
-                                    <padding><Insets bottom="15.0" left="15.0" right="15.0" top="15.0" /></padding>
+                                <VBox alignment="CENTER" prefHeight="90.0" spacing="2.0" style="-fx-background-color: #EEF1EB; -fx-background-radius: 16;" HBox.hgrow="ALWAYS">
+                                    <padding><Insets bottom="12.0" left="10.0" right="10.0" top="12.0" /></padding>
                                     <children>
                                         <Label fx:id="kmThisMonthLabel" text="0.0 km" textFill="#111111">
-                                            <font><Font name="SansSerif Bold" size="36.0" /></font>
+                                            <font><Font name="SansSerif Bold" size="28.0" /></font>
                                         </Label>
-                                        <Label text="Km en el ultimo mes" textFill="#6B7280">
-                                            <font><Font name="SansSerif Regular" size="13.0" /></font>
+                                        <Label text="Distancia" textFill="#6B7280">
+                                            <font><Font name="SansSerif Regular" size="12.0" /></font>
+                                        </Label>
+                                    </children>
+                                </VBox>
+                                <VBox alignment="CENTER" prefHeight="90.0" spacing="2.0" style="-fx-background-color: #EEF1EB; -fx-background-radius: 16;" HBox.hgrow="ALWAYS">
+                                    <padding><Insets bottom="12.0" left="10.0" right="10.0" top="12.0" /></padding>
+                                    <children>
+                                        <Label fx:id="totalTimeLabel" text="0h 0m" textFill="#111111">
+                                            <font><Font name="SansSerif Bold" size="28.0" /></font>
+                                        </Label>
+                                        <Label text="Tiempo" textFill="#6B7280">
+                                            <font><Font name="SansSerif Regular" size="12.0" /></font>
+                                        </Label>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+
+                        <!-- Fila 2: ascenso y descenso (del ultimo mes) -->
+                        <HBox spacing="14.0">
+                            <children>
+                                <VBox alignment="CENTER" prefHeight="90.0" spacing="2.0" style="-fx-background-color: #EEF1EB; -fx-background-radius: 16;" HBox.hgrow="ALWAYS">
+                                    <padding><Insets bottom="12.0" left="10.0" right="10.0" top="12.0" /></padding>
+                                    <children>
+                                        <Label fx:id="totalGainLabel" text="0 m" textFill="#111111">
+                                            <font><Font name="SansSerif Bold" size="28.0" /></font>
+                                        </Label>
+                                        <Label text="Ascenso" textFill="#6B7280">
+                                            <font><Font name="SansSerif Regular" size="12.0" /></font>
+                                        </Label>
+                                    </children>
+                                </VBox>
+                                <VBox alignment="CENTER" prefHeight="90.0" spacing="2.0" style="-fx-background-color: #EEF1EB; -fx-background-radius: 16;" HBox.hgrow="ALWAYS">
+                                    <padding><Insets bottom="12.0" left="10.0" right="10.0" top="12.0" /></padding>
+                                    <children>
+                                        <Label fx:id="totalLossLabel" text="0 m" textFill="#111111">
+                                            <font><Font name="SansSerif Bold" size="28.0" /></font>
+                                        </Label>
+                                        <Label text="Descenso" textFill="#6B7280">
+                                            <font><Font name="SansSerif Regular" size="12.0" /></font>
                                         </Label>
                                     </children>
                                 </VBox>
@@ -96,7 +145,7 @@
                         <ListView fx:id="recentSessionsList" prefHeight="425.0" prefWidth="560.0" style="-fx-background-color: transparent; -fx-background-insets: 0; -fx-padding: 0;" />
                         <Region VBox.vgrow="ALWAYS" />
                         <Button maxWidth="1.7976931348623157E308" onAction="#openHistorial" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="42.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-cursor: hand;" text="Ver historial completo de sesiones" textFill="#111111">
-                            <font><Font name="SansSerif Bold" size="15.0" /></font>
+                            <font><Font name="SansSerif Regular" size="15.0" /></font>
                      <VBox.margin>
                         <Insets bottom="25.0" />
                      </VBox.margin>
@@ -111,11 +160,11 @@
                         <Label text="¿Listo para correr?" textFill="#111111" wrapText="true">
                             <font><Font name="SansSerif Bold" size="22.0" /></font>
                         </Label>
-                        <Label text="Empieza una nueva sesion para registrar tu ruta" textAlignment="CENTER" textFill="#6B7280" wrapText="true">
+                        <Label text="Empieza una nueva sesión para registrar tu ruta" textAlignment="CENTER" textFill="#6B7280" wrapText="true">
                             <font><Font name="SansSerif Regular" size="14.0" /></font>
                         </Label>
                         <Region VBox.vgrow="ALWAYS" />
-                        <Button maxWidth="1.7976931348623157E308" onAction="#startNewSession" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="80.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 14; -fx-cursor: hand;" text="Nueva sesion" textFill="#111111">
+                        <Button maxWidth="1.7976931348623157E308" onAction="#startNewSession" onMouseEntered="#hoverEnter" onMouseExited="#hoverExit" prefHeight="80.0" style="-fx-background-color: #C6FF3B; -fx-background-radius: 14; -fx-cursor: hand;" text="Nueva sesión" textFill="#111111">
                             <font><Font name="SansSerif Bold" size="22.0" /></font>
                         </Button>
                     </children>

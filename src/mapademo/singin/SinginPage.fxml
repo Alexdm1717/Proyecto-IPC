@@ -110,7 +110,7 @@
                               <Insets bottom="2.0" left="25.0" top="8.0" />
                            </VBox.margin>
                         </Label>
-                        <PasswordField fx:id="passwordField" opacity="0.85" prefHeight="32.0" promptText="8-20 caracteres" style="-fx-border-radius: 10; -fx-background-radius: 10; -fx-background-color: #ffffff;">
+                        <PasswordField fx:id="passwordField" opacity="0.85" prefHeight="32.0" promptText="8-20 caracteres, un numero y un caracter especial" style="-fx-border-radius: 10; -fx-background-radius: 10; -fx-background-color: #ffffff;">
                            <font>
                               <Font name="SansSerif Regular" size="14.0" />
                            </font>
@@ -141,7 +141,7 @@
                               <Insets bottom="2.0" left="25.0" top="8.0" />
                            </VBox.margin>
                         </Label>
-                        <TextField fx:id="birthDateField" prefHeight="32.0" prefWidth="372.0" promptText="dd/MM/yyyy" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-background-color: #fdfdfd;" styleClass="input_text">
+                        <TextField fx:id="birthDateField" prefHeight="32.0" prefWidth="372.0" promptText="dd/mm/yyyy" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-background-color: #fdfdfd;" styleClass="input_text">
                            <VBox.margin>
                               <Insets left="15.0" right="15.0" />
                            </VBox.margin>

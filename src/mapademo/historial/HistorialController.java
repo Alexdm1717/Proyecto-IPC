@@ -17,15 +17,29 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
+import java.util.Optional;
+import javafx.event.ActionEvent;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseButton;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -42,6 +56,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import mapademo.App;
+import mapademo.util.MapDialogs;
 import upv.ipc.sportlib.Activity;
 import upv.ipc.sportlib.Annotation;
 import upv.ipc.sportlib.AnnotationType;
@@ -71,6 +86,7 @@ public class HistorialController implements Initializable {
     @FXML private Label statDistancia;
     @FXML private Label statDuracion;
     @FXML private Label statVelocidad;
+    @FXML private Label statRitmo;
     @FXML private Label statDesnivel;
     @FXML private Label statAltitud;
     @FXML private Label statAnotaciones;
@@ -87,6 +103,16 @@ public class HistorialController implements Initializable {
     private double[] cumDistancesM;
     // circulito azul que se mueve por el mapa siguiendo al raton sobre la grafica
     private Circle mapCursor;
+
+    // ----- estado para crear anotaciones (copiado de MainController) -----
+    // Maquina de estados para anotaciones de 2 puntos (LINE / CIRCLE)
+    private AnnotationType pendingType = null;
+    private String pendingText = "";
+    private String pendingColor = "#E63946";
+    private final List<GeoPoint> pendingPoints = new ArrayList<>();
+    // actividad actualmente cargada (para asociar las anotaciones)
+    private Activity currentActivity;
+    private final SportActivityApp app = SportActivityApp.getInstance();
 
 
     @Override
@@ -248,6 +274,8 @@ public class HistorialController implements Initializable {
 
     // Punto de entrada cuando el usuario selecciona una sesion
     private void showActivity(Activity a) {
+        currentActivity = a;
+        cancelPending();
         currentTrackPoints = a.getTrackPoints();
         if (currentTrackPoints == null) currentTrackPoints = new ArrayList<>();
 
@@ -263,18 +291,15 @@ public class HistorialController implements Initializable {
     private void buildMap(Activity a) {
         mapPane.getChildren().clear();
 
-        // la propia libreria nos dice que region del mapa cubre la actividad
+        // La libreria puede devolver un MapRegion aunque la imagen no exista en disco
+        // (ej: pirineos esta registrado por defecto pero el JPG solo aparece despues
+        // de correr el script python). En ambos casos -> placeholder "no hay mapa".
         MapRegion region = a.getSuggestedMap();
-        if (region == null) return;
-
-        File imgFile = new File(region.getImagePath());
-        if (!imgFile.exists()) {
-            // no deberia pasar pero por si acaso
-            Label err = new Label("Imagen del mapa no encontrada");
-            err.setTextFill(Color.web("#6B7280"));
-            mapPane.getChildren().add(err);
+        if (region == null || !new File(region.getImagePath()).exists()) {
+            mostrarPlaceholderSinMapa();
             return;
         }
+        File imgFile = new File(region.getImagePath());
 
         // carga sincrona (el 'false') para que getWidth/getHeight devuelvan ya el tamano real
         Image img = new Image(imgFile.toURI().toString(), false);
@@ -339,6 +364,67 @@ public class HistorialController implements Initializable {
         mapCursor.setStrokeWidth(2);
         mapCursor.setVisible(false);
         mapPane.getChildren().add(mapCursor);
+
+        // Handlers para crear anotaciones (clic derecho menu, clic izquierdo 2.o punto).
+        // Copiado del MainController, solo que aqui no hay drag/pan ni zoom.
+        mapPane.setOnMouseClicked(e -> {
+            if (e.getButton() == MouseButton.SECONDARY) {
+                if (pendingType == null) {
+                    if (currentActivity != null) {
+                        showAnnotationMenu(e.getX(), e.getY(), e.getScreenX(), e.getScreenY());
+                    }
+                } else {
+                    cancelPending();
+                }
+            } else if (e.getButton() == MouseButton.PRIMARY && pendingType != null) {
+                pendingPoints.add(currentProjection.unproject(e.getX(), e.getY()));
+                if (pendingPoints.size() == 2) {
+                    saveAnnotation(pendingType, pendingText, pendingColor,
+                            new ArrayList<>(pendingPoints));
+                    cancelPending();
+                }
+            }
+        });
+    }
+
+    // Cuando la actividad no tiene mapa asociado pintamos un texto y un boton
+    // para que el usuario pueda anadir uno con su bounding box.
+    private void mostrarPlaceholderSinMapa(){
+        // ajustamos mapPane al tamano del viewport del scroll para que se vea centrado
+        double w = Math.max(400, mapScroll.getViewportBounds() != null
+                ? mapScroll.getViewportBounds().getWidth() : 400);
+        double h = Math.max(300, mapScroll.getViewportBounds() != null
+                ? mapScroll.getViewportBounds().getHeight() : 300);
+        mapPane.setPrefSize(w, h);
+        mapPane.setMinSize(w, h);
+        mapPane.setMaxSize(w, h);
+
+        Label texto = new Label("No hay mapa para esta actividad");
+        texto.setTextFill(Color.web("#6B7280"));
+        texto.setFont(Font.font("SansSerif", FontWeight.BOLD, 16));
+
+        Button addBtn = new Button("Añadir mapa");
+        addBtn.setStyle("-fx-background-color: #C6FF3B; -fx-background-radius: 10; -fx-cursor: hand;");
+        addBtn.setPrefHeight(40);
+        addBtn.setPrefWidth(180);
+        addBtn.setOnAction(e -> anadirMapaParaActividad());
+        // mismo hover que el resto: verde claro -> verde oscuro
+        addBtn.setOnMouseEntered(e -> addBtn.setStyle(addBtn.getStyle().replace("#C6FF3B", "#A1E000")));
+        addBtn.setOnMouseExited(e -> addBtn.setStyle(addBtn.getStyle().replace("#A1E000", "#C6FF3B")));
+
+        VBox box = new VBox(15, texto, addBtn);
+        box.setAlignment(Pos.CENTER);
+        box.setPrefSize(w, h);
+        mapPane.getChildren().add(box);
+    }
+
+    // Llama al dialogo de anadir mapa. Si se anade correctamente, recargamos la
+    // actividad para que la libreria reasocie el mapa via getSuggestedMap().
+    private void anadirMapaParaActividad(){
+        Activity sel = sessionsList.getSelectionModel().getSelectedItem();
+        if (sel == null) return;
+        boolean added = MapDialogs.showAddMapDialog(mapPane.getScene().getWindow());
+        if (added) showActivity(sel);
     }
 
     // Mueve el scroll para que el punto (cx,cy) del mapa quede en el centro del viewport.
@@ -480,9 +566,20 @@ public class HistorialController implements Initializable {
 
         statDuracion.setText(formatDuration(a.getDuration()));
 
-        // getAverageSpeed devuelve m/s, lo pasamos a km/h multiplicando por 3.6
-        double kmh = a.getAverageSpeed() * 3.6;
+        // getAverageSpeed ya devuelve km/h, no hace falta convertir
+        double kmh = a.getAverageSpeed();
         statVelocidad.setText(String.format("%.2f km/h", kmh));
+
+        // ritmo medio = minutos por kilometro. Lo calculamos a partir de la velocidad
+        // porque no sabemos en que unidad devuelve getAveragePace() la libreria.
+        if (kmh > 0) {
+            double minPorKm = 60.0 / kmh;
+            int m = (int) minPorKm;
+            int s = (int) ((minPorKm - m) * 60);
+            statRitmo.setText(String.format("%d:%02d min/km", m, s));
+        } else {
+            statRitmo.setText("—");
+        }
 
         // ascenso y descenso acumulado (en metros)
         statDesnivel.setText(String.format("+%.0f m / -%.0f m",
@@ -637,5 +734,141 @@ public class HistorialController implements Initializable {
         n.setStyle(n.getStyle()
                 .replace("#A1E000", "#C6FF3B")
                 .replace("#cfcfcf", "#dfdfdf"));
+    }
+
+
+    // =================================================================
+    // CREACION DE ANOTACIONES (copiado del MainController)
+    // =================================================================
+
+    // Menu contextual con los 4 tipos de anotacion
+    private void showAnnotationMenu(double mapX, double mapY, double screenX, double screenY){
+        ContextMenu menu = new ContextMenu();
+        MenuItem miPoint  = new MenuItem("Punto");
+        MenuItem miText   = new MenuItem("Texto");
+        MenuItem miLine   = new MenuItem("Linea (selecciona 2 puntos)");
+        MenuItem miCircle = new MenuItem("Circulo (selecciona 2 puntos)");
+
+        miPoint.setOnAction(e -> startOnePointAnnotation(AnnotationType.POINT, mapX, mapY));
+        miText.setOnAction(e -> startOnePointAnnotation(AnnotationType.TEXT, mapX, mapY));
+        miLine.setOnAction(e -> startTwoPointAnnotation(AnnotationType.LINE, mapX, mapY));
+        miCircle.setOnAction(e -> startTwoPointAnnotation(AnnotationType.CIRCLE, mapX, mapY));
+
+        menu.getItems().addAll(miPoint, miText, miLine, miCircle);
+        menu.show(mapPane.getScene().getWindow(), screenX, screenY);
+    }
+
+    // Anotacion de 1 punto: dialogo y guardar directo (diferido para que el menu se cierre)
+    private void startOnePointAnnotation(AnnotationType type, double mapX, double mapY){
+        Platform.runLater(() -> {
+            Optional<String[]> res = showAnnotationDialog(type);
+            if (res.isEmpty()) return;
+            GeoPoint geo = currentProjection.unproject(mapX, mapY);
+            saveAnnotation(type, res.get()[0], res.get()[1], List.of(geo));
+        });
+    }
+
+    // Anotacion de 2 puntos: dialogo y esperar 2.o clic izquierdo
+    private void startTwoPointAnnotation(AnnotationType type, double mapX, double mapY){
+        Platform.runLater(() -> {
+            Optional<String[]> res = showAnnotationDialog(type);
+            if (res.isEmpty()) return;
+            pendingText = res.get()[0];
+            pendingColor = res.get()[1];
+            pendingType = type;
+            pendingPoints.clear();
+            pendingPoints.add(currentProjection.unproject(mapX, mapY));
+            mapPane.setStyle("-fx-cursor: crosshair;");
+        });
+    }
+
+    private void cancelPending(){
+        pendingType = null;
+        pendingPoints.clear();
+        if (mapPane != null) mapPane.setStyle("");
+    }
+
+    // Dialogo para texto y color de la anotacion. Mismo workaround que en Main
+    // (initOwner, modality, forzar tamano del Stage, foco en el TextField) para
+    // que no salga cortado ni detras en Linux.
+    private Optional<String[]> showAnnotationDialog(AnnotationType type){
+        String header = "";
+        if (type == AnnotationType.POINT)       header = "Punto - introduce los datos";
+        else if (type == AnnotationType.TEXT)   header = "Texto - introduce los datos";
+        else if (type == AnnotationType.LINE)   header = "Linea - haz clic izquierdo en el mapa para el 2.o punto";
+        else if (type == AnnotationType.CIRCLE) header = "Circulo - haz clic izquierdo en el mapa para el borde";
+
+        Dialog<String[]> dialog = new Dialog<>();
+        dialog.setTitle("Nueva anotacion");
+        dialog.initOwner(mapPane.getScene().getWindow());
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.setResizable(true);
+
+        ButtonType okBtn = new ButtonType("Aceptar", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(okBtn, ButtonType.CANCEL);
+
+        Label headerLabel = new Label(header);
+        headerLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
+        headerLabel.setWrapText(true);
+        headerLabel.setMinWidth(380);
+
+        Label tLabel = new Label("Texto:");
+        tLabel.setMinWidth(60);
+        TextField textField = new TextField();
+        textField.setPromptText("Texto (opcional)");
+        textField.setPrefWidth(300);
+        HBox.setHgrow(textField, Priority.ALWAYS);
+        HBox row1 = new HBox(10, tLabel, textField);
+        row1.setAlignment(Pos.CENTER_LEFT);
+
+        Label cLabel = new Label("Color:");
+        cLabel.setMinWidth(60);
+        ColorPicker colorPicker = new ColorPicker(Color.web("#E63946"));
+        colorPicker.setPrefWidth(Double.MAX_VALUE);
+        HBox.setHgrow(colorPicker, Priority.ALWAYS);
+        HBox row2 = new HBox(10, cLabel, colorPicker);
+        row2.setAlignment(Pos.CENTER_LEFT);
+
+        VBox content = new VBox(12, headerLabel, row1, row2);
+        content.setPadding(new Insets(15));
+        content.setMinSize(440, 160);
+        content.setPrefSize(440, 160);
+        dialog.getDialogPane().setContent(content);
+        dialog.getDialogPane().setMinSize(460, 220);
+        dialog.getDialogPane().setPrefSize(460, 220);
+
+        dialog.setOnShown(ev -> {
+            Stage st = (Stage) dialog.getDialogPane().getScene().getWindow();
+            st.setMinWidth(460);
+            st.setMinHeight(220);
+            st.setWidth(460);
+            st.setHeight(220);
+            st.centerOnScreen();
+            st.toFront();
+            textField.requestFocus();
+        });
+
+        dialog.setResultConverter(btn -> {
+            if (btn != okBtn) return null;
+            Color c = colorPicker.getValue();
+            String hex = String.format("#%02X%02X%02X",
+                    (int)(c.getRed()   * 255),
+                    (int)(c.getGreen() * 255),
+                    (int)(c.getBlue()  * 255));
+            return new String[]{ textField.getText().trim(), hex };
+        });
+
+        return dialog.showAndWait();
+    }
+
+    // Persistir la anotacion (la lib la guarda en BBDD) y dibujarla sobre el mapa
+    private void saveAnnotation(AnnotationType type, String text, String color, List<GeoPoint> points){
+        if (currentActivity == null) return;
+        Annotation ann = new Annotation(type, text, color, 2.5, points);
+        Annotation saved = app.addAnnotation(currentActivity, ann);
+        if (saved != null){
+            drawAnnotation(saved);
+            annotationsList.getItems().add(saved);
+        }
     }
 }
